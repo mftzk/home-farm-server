@@ -8,6 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('light_readings')) {
+            return;
+        }
+
         Schema::create('light_readings', function (Blueprint $table) {
             $table->increments('id');
             $table->float('lux');
