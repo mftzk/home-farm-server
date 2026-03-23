@@ -1,0 +1,32 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8080:80"
+    environment:
+      DB_HOST: db
+      DB_NAME: esp8266_light
+      DB_USER: root
+      DB_PASS: lightpass
+      ESP_IP: 192.168.1.100    # Ganti dengan IP ESP8266 kamu
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: mariadb:11
+    environment:
+      MARIADB_ROOT_PASSWORD: lightpass
+      MARIADB_DATABASE: esp8266_light
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  db_data:
