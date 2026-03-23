@@ -1,1 +1,1 @@
-* * * * * . /etc/environment; /usr/local/bin/php /var/www/html/fetch_data.php >> /var/log/light_fetch.log 2>&1
+* * * * * . /etc/environment; cd /var/www/html && /usr/local/bin/php artisan schedule:run >> /var/log/laravel-scheduler.log 2>&1

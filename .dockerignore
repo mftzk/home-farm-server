@@ -1,4 +1,14 @@
-Dockerfile
+node_modules
+.git
+.env
+.env.backup
+.env.example
+vendor
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+tests
+phpunit.xml
+README.md
 docker-compose.yml
-.dockerignore
-schema.sql

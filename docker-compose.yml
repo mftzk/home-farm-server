@@ -4,11 +4,22 @@ services:
     ports:
       - "8080:80"
     environment:
+      APP_NAME: "Light Monitor"
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_KEY: base64:bGIbq7rOviZJpPsJgkwn3iCktltJ7JLkNH0N5dpgztQ=
+      APP_URL: http://localhost:8080
+      DB_CONNECTION: mysql
       DB_HOST: db
-      DB_NAME: esp8266_light
-      DB_USER: root
-      DB_PASS: lightpass
+      DB_PORT: 3306
+      DB_DATABASE: esp8266_light
+      DB_USERNAME: root
+      DB_PASSWORD: lightpass
+      SESSION_DRIVER: file
+      CACHE_STORE: file
+      QUEUE_CONNECTION: sync
       ESP_IP: 192.168.1.100    # Ganti dengan IP ESP8266 kamu
+      ESP_TIMEOUT: 5
     depends_on:
       db:
         condition: service_healthy
