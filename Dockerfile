@@ -19,7 +19,7 @@ COPY . .
 RUN composer dump-autoload --optimize --no-dev
 
 # --- Stage 3: Final image ---
-FROM php:8.2-apache
+FROM php:8.4-apache
 
 RUN docker-php-ext-install pdo pdo_mysql \
     && apt-get update && apt-get install -y --no-install-recommends cron \
