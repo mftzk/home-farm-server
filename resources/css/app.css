@@ -6,46 +6,50 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Segoe UI', system-ui, sans-serif;
-    --color-dark-800: #16213e;
-    --color-dark-900: #1a1a2e;
-    --color-gold: #f5a623;
+    --font-sans: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    --color-dark-700: #1a211a;
+    --color-dark-800: #141a14;
+    --color-dark-900: #0b0b0b;
+    --color-forest: #3a7d44;
+    --color-forest-light: #4a9d56;
+    --color-forest-dark: #2d6a35;
 }
 
 /* Section title */
 .section-title {
-    @apply text-lg font-bold text-gray-300 mb-4 pb-2 border-b border-gray-700/50;
+    @apply text-lg font-bold text-gray-300 mb-4 pb-2 border-b border-white/5;
 }
 
 /* Range buttons */
 .range-btn {
-    @apply bg-dark-800 text-gray-400 border-2 border-dark-800 rounded-lg
+    @apply bg-dark-800 text-gray-500 border border-white/10 rounded-full
            px-4 py-2 cursor-pointer text-sm transition-all duration-200;
 }
 .range-btn:hover {
-    @apply border-gold text-gray-100;
+    @apply border-forest text-gray-200;
 }
 .range-btn.active {
-    @apply bg-gold text-dark-900 border-gold font-bold;
+    @apply bg-forest text-white border-forest font-semibold;
 }
 
 /* Cards */
 .card {
-    @apply bg-dark-800 rounded-2xl p-5 text-center shadow-lg shadow-black/30;
+    @apply bg-dark-800 rounded-2xl p-5 text-center
+           shadow-lg shadow-black/40 border border-white/5;
 }
 .card-label {
-    @apply text-xs text-gray-500 mb-1.5;
+    @apply text-xs text-gray-500 mb-1.5 uppercase tracking-wider;
 }
 .card-value {
     @apply text-3xl font-bold;
 }
 .card-unit {
-    @apply text-xs text-gray-500;
+    @apply text-xs text-gray-600;
 }
 
 /* Panel (chart & table container) */
 .panel {
-    @apply bg-dark-800 rounded-2xl p-5 shadow-lg shadow-black/30;
+    @apply bg-dark-800 rounded-2xl p-5 shadow-lg shadow-black/40 border border-white/5;
 }
 .panel canvas {
     @apply w-full max-h-[340px];
@@ -53,16 +57,17 @@
 
 /* Table */
 .table-th {
-    @apply py-2.5 px-3.5 text-left text-gray-500 border-b border-gray-700/50 font-semibold;
+    @apply py-2.5 px-3.5 text-left text-gray-500 border-b border-white/5 font-semibold
+           uppercase text-xs tracking-wider;
 }
 #tbl td {
-    @apply py-2.5 px-3.5 border-b border-dark-900;
+    @apply py-2.5 px-3.5 border-b border-white/5;
 }
 #tbl tr:hover td {
-    @apply bg-dark-900;
+    @apply bg-forest/5;
 }
 .lux-cell {
-    @apply text-gold font-bold;
+    @apply text-forest-light font-bold;
 }
 
 /* Status dot */
@@ -70,10 +75,10 @@
     @apply inline-block w-2 h-2 rounded-full mr-1.5;
 }
 .status-dot.ok {
-    @apply bg-emerald-400;
+    @apply bg-forest-light;
 }
 .status-dot.err {
-    @apply bg-red-400;
+    @apply bg-red-500;
 }
 
 /* ===== RELAY CONTROL ===== */
@@ -83,10 +88,11 @@
 }
 
 .relay-card {
-    @apply bg-dark-900 rounded-xl p-3 text-center transition-all duration-300;
+    @apply bg-dark-700 rounded-xl p-3 text-center transition-all duration-300
+           border border-white/5;
 }
 .relay-card.relay-active {
-    @apply ring-2 ring-emerald-400/50;
+    @apply border-forest/50 bg-forest/10;
 }
 
 /* Toggle switch */
@@ -97,14 +103,14 @@
     @apply opacity-0 w-0 h-0;
 }
 .relay-slider {
-    @apply absolute cursor-pointer inset-0 bg-gray-600 rounded-full transition-all duration-300;
+    @apply absolute cursor-pointer inset-0 bg-white/10 rounded-full transition-all duration-300;
 }
 .relay-slider::before {
     content: '';
-    @apply absolute h-5 w-5 left-1 bottom-1 bg-gray-400 rounded-full transition-all duration-300;
+    @apply absolute h-5 w-5 left-1 bottom-1 bg-gray-500 rounded-full transition-all duration-300;
 }
 .relay-switch input:checked + .relay-slider {
-    @apply bg-emerald-500;
+    background-color: var(--color-forest);
 }
 .relay-switch input:checked + .relay-slider::before {
     @apply translate-x-7 bg-white;
@@ -115,7 +121,7 @@
     @apply text-xs font-bold mt-1;
 }
 .relay-status.on {
-    @apply text-emerald-400;
+    @apply text-forest-light;
 }
 .relay-status.off {
     @apply text-gray-600;
@@ -123,17 +129,17 @@
 
 /* ALL ON / ALL OFF buttons */
 .relay-btn {
-    @apply px-5 py-2 border-none rounded-lg text-xs cursor-pointer font-bold transition-all duration-200;
+    @apply px-5 py-2 border-none rounded-full text-xs cursor-pointer font-bold transition-all duration-200;
 }
 .relay-btn-on {
-    @apply bg-emerald-500 text-dark-900;
+    @apply bg-forest text-white;
 }
 .relay-btn-on:hover {
-    @apply bg-emerald-400;
+    @apply bg-forest-light;
 }
 .relay-btn-off {
-    @apply bg-red-500 text-white;
+    @apply bg-white/10 text-gray-300;
 }
 .relay-btn-off:hover {
-    @apply bg-red-400;
+    @apply bg-red-500/80 text-white;
 }

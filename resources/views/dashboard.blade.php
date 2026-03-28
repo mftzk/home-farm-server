@@ -5,15 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>IoT Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-dark-900 text-gray-100 min-h-screen font-sans">
     <div class="max-w-[1100px] mx-auto px-4 py-6">
 
-        <h1 class="text-center text-2xl font-bold text-gold mb-1">
-            IoT Dashboard
+        <h1 class="text-center text-2xl font-bold text-white mb-1">
+            IoT<span class="text-forest-light">Dashboard</span>
         </h1>
-        <p class="text-center text-sm text-gray-500 mb-5">
+        <p class="text-center text-sm text-gray-600 mb-5">
             ESP8266 &mdash; Light Monitor + Relay Control
         </p>
 
@@ -32,22 +34,22 @@
                 <div class="card-label">
                     <span class="status-dot ok" id="dot"></span>Terakhir
                 </div>
-                <div class="card-value text-gold" id="c-cur">--</div>
+                <div class="card-value text-forest-light" id="c-cur">--</div>
                 <div class="card-unit">lux</div>
             </div>
             <div class="card">
                 <div class="card-label">Min</div>
-                <div class="card-value text-blue-400" id="c-min">--</div>
+                <div class="card-value text-emerald-300" id="c-min">--</div>
                 <div class="card-unit">lux</div>
             </div>
             <div class="card">
                 <div class="card-label">Max</div>
-                <div class="card-value text-orange-400" id="c-max">--</div>
+                <div class="card-value text-green-200" id="c-max">--</div>
                 <div class="card-unit">lux</div>
             </div>
             <div class="card">
                 <div class="card-label">Rata-rata</div>
-                <div class="card-value text-emerald-400" id="c-avg">--</div>
+                <div class="card-value text-teal-300" id="c-avg">--</div>
                 <div class="card-unit">lux</div>
             </div>
         </div>
@@ -62,7 +64,7 @@
 
             {{-- Relay Control --}}
             <div class="panel relay-panel">
-                <h2 class="text-sm font-bold text-gray-300 mb-3">&#9889; Relay Control</h2>
+                <h2 class="text-sm font-bold text-gray-300 mb-3">Relay Control</h2>
 
                 <div class="grid grid-cols-2 gap-2.5 mb-3" id="relay-cards">
                     @for ($i = 0; $i < 4; $i++)
@@ -84,7 +86,7 @@
 
                 <div class="text-center">
                     <span class="status-dot" id="relay-dot"></span>
-                    <span class="text-xs text-gray-500" id="relay-footer">Menghubungkan ke relay...</span>
+                    <span class="text-xs text-gray-600" id="relay-footer">Menghubungkan ke relay...</span>
                 </div>
             </div>
 
@@ -92,7 +94,7 @@
 
         {{-- Table --}}
         <div class="panel overflow-x-auto mb-5">
-            <h2 class="text-sm text-gray-400 mb-3">10 Pembacaan Terbaru</h2>
+            <h2 class="text-sm text-gray-500 mb-3 uppercase tracking-wider">10 Pembacaan Terbaru</h2>
             <table class="w-full border-collapse text-sm">
                 <thead>
                     <tr>
@@ -105,7 +107,7 @@
             </table>
         </div>
 
-        <div class="text-center mt-5 text-xs text-gray-600" id="footer">
+        <div class="text-center mt-5 text-xs text-gray-700" id="footer">
             Auto-refresh 60 detik
         </div>
     </div>

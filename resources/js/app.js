@@ -18,8 +18,8 @@ function initChart() {
             datasets: [{
                 label: 'Lux',
                 data: [],
-                borderColor: '#f5a623',
-                backgroundColor: 'rgba(245, 166, 35, 0.08)',
+                borderColor: '#4a9d56',
+                backgroundColor: 'rgba(58, 125, 68, 0.1)',
                 borderWidth: 2,
                 pointRadius: 0,
                 pointHitRadius: 8,
@@ -34,10 +34,10 @@ function initChart() {
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: '#16213e',
+                    backgroundColor: '#141a14',
                     titleColor: '#eee',
-                    bodyColor: '#f5a623',
-                    borderColor: '#253350',
+                    bodyColor: '#4a9d56',
+                    borderColor: '#1a211a',
                     borderWidth: 1,
                     callbacks: {
                         label: (ctx) => ctx.parsed.y.toFixed(1) + ' lux',
@@ -48,14 +48,14 @@ function initChart() {
                 x: {
                     type: 'time',
                     time: { tooltipFormat: 'dd MMM yyyy HH:mm' },
-                    grid: { color: 'rgba(255, 255, 255, 0.04)' },
-                    ticks: { color: '#666', maxTicksLimit: 8 },
+                    grid: { color: 'rgba(255, 255, 255, 0.03)' },
+                    ticks: { color: '#555', maxTicksLimit: 8 },
                 },
                 y: {
                     beginAtZero: true,
-                    grid: { color: 'rgba(255, 255, 255, 0.04)' },
-                    ticks: { color: '#666' },
-                    title: { display: true, text: 'Lux', color: '#666' },
+                    grid: { color: 'rgba(255, 255, 255, 0.03)' },
+                    ticks: { color: '#555' },
+                    title: { display: true, text: 'Lux', color: '#555' },
                 },
             },
         },
