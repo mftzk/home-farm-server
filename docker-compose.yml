@@ -18,7 +18,8 @@ services:
       SESSION_DRIVER: file
       CACHE_STORE: file
       QUEUE_CONNECTION: sync
-      ESP_IP: 192.168.1.100    # Ganti dengan IP ESP8266 kamu
+      ESP_IP: 192.168.1.100        # IP ESP8266 sensor cahaya
+      ESP_RELAY_IP: 192.168.1.101  # IP ESP8266 relay control
       ESP_TIMEOUT: 5
     depends_on:
       db:

@@ -2,8 +2,13 @@ import Chart from 'chart.js/auto';
 import 'chartjs-adapter-date-fns';
 
 const API = '/api/readings';
+const RELAY_API = '/api/relay';
 let currentRange = '24h';
 let chart;
+
+const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+
+// ===== LIGHT MONITOR =====
 
 function initChart() {
     const ctx = document.getElementById('chart').getContext('2d');
@@ -105,6 +110,84 @@ document.querySelectorAll('#range-bar button').forEach((btn) => {
     });
 });
 
+// ===== RELAY CONTROL =====
+
+function updateRelayUI(states) {
+    if (!states) return;
+    for (let i = 0; i < states.length; i++) {
+        const checkbox = document.getElementById(`relay-${i}`);
+        const status = document.getElementById(`relay-status-${i}`);
+        const card = document.getElementById(`relay-card-${i}`);
+        if (checkbox) checkbox.checked = states[i] === 1;
+        if (status) {
+            status.textContent = states[i] ? 'ON' : 'OFF';
+            status.className = `relay-status ${states[i] ? 'on' : 'off'}`;
+        }
+        if (card) {
+            card.classList.toggle('relay-active', states[i] === 1);
+        }
+    }
+    document.getElementById('relay-dot').className = 'status-dot ok';
+    document.getElementById('relay-footer').textContent =
+        `Terhubung — ${new Date().toLocaleTimeString('id-ID')}`;
+}
+
+async function fetchRelayStatus() {
+    try {
+        const res = await fetch(`${RELAY_API}/status`);
+        const json = await res.json();
+        if (json.error) throw new Error(json.error);
+        updateRelayUI(json.s);
+    } catch (e) {
+        document.getElementById('relay-dot').className = 'status-dot err';
+        document.getElementById('relay-footer').textContent = 'Relay offline';
+    }
+}
+
+window.toggleRelay = async function (id, checked) {
+    try {
+        const res = await fetch(`${RELAY_API}/toggle`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+            },
+            body: JSON.stringify({ id, state: checked ? 1 : 0 }),
+        });
+        const json = await res.json();
+        if (json.error) throw new Error(json.error);
+        updateRelayUI(json.s);
+    } catch (e) {
+        document.getElementById('relay-dot').className = 'status-dot err';
+        document.getElementById('relay-footer').textContent = 'Gagal: ' + e.message;
+        fetchRelayStatus();
+    }
+};
+
+window.allRelay = async function (state) {
+    try {
+        const res = await fetch(`${RELAY_API}/all`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+            },
+            body: JSON.stringify({ state }),
+        });
+        const json = await res.json();
+        if (json.error) throw new Error(json.error);
+        updateRelayUI(json.s);
+    } catch (e) {
+        document.getElementById('relay-dot').className = 'status-dot err';
+        document.getElementById('relay-footer').textContent = 'Gagal: ' + e.message;
+        fetchRelayStatus();
+    }
+};
+
+// ===== INIT =====
+
 initChart();
 fetchData();
+fetchRelayStatus();
 setInterval(fetchData, 60000);
+setInterval(fetchRelayStatus, 3000);

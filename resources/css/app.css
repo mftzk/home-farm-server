@@ -12,6 +12,11 @@
     --color-gold: #f5a623;
 }
 
+/* Section title */
+.section-title {
+    @apply text-lg font-bold text-gray-300 mb-4 pb-2 border-b border-gray-700/50;
+}
+
 /* Range buttons */
 .range-btn {
     @apply bg-dark-800 text-gray-400 border-2 border-dark-800 rounded-lg
@@ -68,5 +73,63 @@
     @apply bg-emerald-400;
 }
 .status-dot.err {
+    @apply bg-red-400;
+}
+
+/* ===== RELAY CONTROL ===== */
+
+.relay-card {
+    @apply transition-all duration-300;
+}
+.relay-card.relay-active {
+    @apply ring-2 ring-emerald-400/50;
+}
+
+/* Toggle switch */
+.relay-switch {
+    @apply relative inline-block w-14 h-7 my-2;
+}
+.relay-switch input {
+    @apply opacity-0 w-0 h-0;
+}
+.relay-slider {
+    @apply absolute cursor-pointer inset-0 bg-gray-600 rounded-full transition-all duration-300;
+}
+.relay-slider::before {
+    content: '';
+    @apply absolute h-5 w-5 left-1 bottom-1 bg-gray-400 rounded-full transition-all duration-300;
+}
+.relay-switch input:checked + .relay-slider {
+    @apply bg-emerald-500;
+}
+.relay-switch input:checked + .relay-slider::before {
+    @apply translate-x-7 bg-white;
+}
+
+/* Relay status text */
+.relay-status {
+    @apply text-xs font-bold mt-1;
+}
+.relay-status.on {
+    @apply text-emerald-400;
+}
+.relay-status.off {
+    @apply text-gray-600;
+}
+
+/* ALL ON / ALL OFF buttons */
+.relay-btn {
+    @apply px-6 py-2.5 border-none rounded-xl text-sm cursor-pointer font-bold transition-all duration-200;
+}
+.relay-btn-on {
+    @apply bg-emerald-500 text-dark-900;
+}
+.relay-btn-on:hover {
+    @apply bg-emerald-400;
+}
+.relay-btn-off {
+    @apply bg-red-500 text-white;
+}
+.relay-btn-off:hover {
     @apply bg-red-400;
 }
