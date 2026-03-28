@@ -78,8 +78,12 @@
 
 /* ===== RELAY CONTROL ===== */
 
+.relay-panel {
+    @apply flex flex-col justify-center;
+}
+
 .relay-card {
-    @apply transition-all duration-300;
+    @apply bg-dark-900 rounded-xl p-3 text-center transition-all duration-300;
 }
 .relay-card.relay-active {
     @apply ring-2 ring-emerald-400/50;
@@ -119,7 +123,7 @@
 
 /* ALL ON / ALL OFF buttons */
 .relay-btn {
-    @apply px-6 py-2.5 border-none rounded-xl text-sm cursor-pointer font-bold transition-all duration-200;
+    @apply px-5 py-2 border-none rounded-lg text-xs cursor-pointer font-bold transition-all duration-200;
 }
 .relay-btn-on {
     @apply bg-emerald-500 text-dark-900;

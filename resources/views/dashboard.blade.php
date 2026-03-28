@@ -8,7 +8,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-dark-900 text-gray-100 min-h-screen font-sans">
-    <div class="max-w-[960px] mx-auto px-4 py-6">
+    <div class="max-w-[1100px] mx-auto px-4 py-6">
 
         <h1 class="text-center text-2xl font-bold text-gold mb-1">
             IoT Dashboard
@@ -16,9 +16,6 @@
         <p class="text-center text-sm text-gray-500 mb-5">
             ESP8266 &mdash; Light Monitor + Relay Control
         </p>
-
-        {{-- ===== LIGHT MONITOR SECTION ===== --}}
-        <div class="section-title">&#9728; Light Monitor</div>
 
         {{-- Range buttons --}}
         <div class="flex justify-center gap-2 mb-5 flex-wrap" id="range-bar">
@@ -55,13 +52,46 @@
             </div>
         </div>
 
-        {{-- Chart --}}
-        <div class="panel mb-5">
-            <canvas id="chart"></canvas>
+        {{-- Chart (left) + Relay (right) --}}
+        <div class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 mb-5">
+
+            {{-- Chart --}}
+            <div class="panel">
+                <canvas id="chart"></canvas>
+            </div>
+
+            {{-- Relay Control --}}
+            <div class="panel relay-panel">
+                <h2 class="text-sm font-bold text-gray-300 mb-3">&#9889; Relay Control</h2>
+
+                <div class="grid grid-cols-2 gap-2.5 mb-3" id="relay-cards">
+                    @for ($i = 0; $i < 4; $i++)
+                    <div class="relay-card" id="relay-card-{{ $i }}">
+                        <div class="card-label">Relay {{ $i + 1 }}</div>
+                        <label class="relay-switch">
+                            <input type="checkbox" id="relay-{{ $i }}" onchange="window.toggleRelay({{ $i }}, this.checked)">
+                            <span class="relay-slider"></span>
+                        </label>
+                        <div class="relay-status off" id="relay-status-{{ $i }}">OFF</div>
+                    </div>
+                    @endfor
+                </div>
+
+                <div class="flex justify-center gap-2 mb-3">
+                    <button class="relay-btn relay-btn-on" onclick="window.allRelay(1)">ALL ON</button>
+                    <button class="relay-btn relay-btn-off" onclick="window.allRelay(0)">ALL OFF</button>
+                </div>
+
+                <div class="text-center">
+                    <span class="status-dot" id="relay-dot"></span>
+                    <span class="text-xs text-gray-500" id="relay-footer">Menghubungkan ke relay...</span>
+                </div>
+            </div>
+
         </div>
 
         {{-- Table --}}
-        <div class="panel overflow-x-auto mb-8">
+        <div class="panel overflow-x-auto mb-5">
             <h2 class="text-sm text-gray-400 mb-3">10 Pembacaan Terbaru</h2>
             <table class="w-full border-collapse text-sm">
                 <thead>
@@ -73,32 +103,6 @@
                 </thead>
                 <tbody id="tbl"></tbody>
             </table>
-        </div>
-
-        {{-- ===== RELAY CONTROL SECTION ===== --}}
-        <div class="section-title">&#9889; Relay Control</div>
-
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mb-4" id="relay-cards">
-            @for ($i = 0; $i < 4; $i++)
-            <div class="card relay-card" id="relay-card-{{ $i }}">
-                <div class="card-label">Relay {{ $i + 1 }}</div>
-                <label class="relay-switch">
-                    <input type="checkbox" id="relay-{{ $i }}" onchange="window.toggleRelay({{ $i }}, this.checked)">
-                    <span class="relay-slider"></span>
-                </label>
-                <div class="relay-status off" id="relay-status-{{ $i }}">OFF</div>
-            </div>
-            @endfor
-        </div>
-
-        <div class="flex justify-center gap-3 mb-5">
-            <button class="relay-btn relay-btn-on" onclick="window.allRelay(1)">ALL ON</button>
-            <button class="relay-btn relay-btn-off" onclick="window.allRelay(0)">ALL OFF</button>
-        </div>
-
-        <div class="text-center mb-5">
-            <span class="status-dot" id="relay-dot"></span>
-            <span class="text-xs text-gray-500" id="relay-footer">Menghubungkan ke relay...</span>
         </div>
 
         <div class="text-center mt-5 text-xs text-gray-600" id="footer">
