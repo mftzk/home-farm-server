@@ -310,6 +310,18 @@ window.allRelay = async function (state) {
     }
 };
 
+// ===== TABS =====
+
+document.querySelectorAll('#tab-bar button').forEach((btn) => {
+    btn.addEventListener('click', () => {
+        document.querySelector('#tab-bar .active').classList.remove('active');
+        btn.classList.add('active');
+        const tab = btn.dataset.tab;
+        document.getElementById('tab-dashboard').classList.toggle('hidden', tab !== 'dashboard');
+        document.getElementById('tab-readings').classList.toggle('hidden', tab !== 'readings');
+    });
+});
+
 // ===== INIT =====
 
 initChart();

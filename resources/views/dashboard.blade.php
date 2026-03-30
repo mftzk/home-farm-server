@@ -19,6 +19,15 @@
             ESP8266 &mdash; Light Monitor + Temp/Humidity + Relay Control
         </p>
 
+        {{-- Tab navigation --}}
+        <div class="flex justify-center gap-2 mb-5" id="tab-bar">
+            <button data-tab="dashboard" class="tab-btn active">Dashboard</button>
+            <button data-tab="readings" class="tab-btn">Pembacaan</button>
+        </div>
+
+        {{-- Tab: Dashboard --}}
+        <div id="tab-dashboard">
+
         {{-- Range buttons --}}
         <div class="flex justify-center gap-2 mb-5 flex-wrap" id="range-bar">
             <button data-range="1h" class="range-btn">1 Jam</button>
@@ -137,35 +146,40 @@
 
         </div>
 
-        {{-- Temperature Table --}}
-        <div class="panel overflow-x-auto mb-5">
-            <h2 class="text-sm text-gray-500 mb-3 uppercase tracking-wider">10 Pembacaan Suhu Terbaru</h2>
-            <table class="w-full border-collapse text-sm">
-                <thead>
-                    <tr>
-                        <th class="table-th">#</th>
-                        <th class="table-th">Suhu (&deg;C)</th>
-                        <th class="table-th">Kelembapan (%)</th>
-                        <th class="table-th">Waktu</th>
-                    </tr>
-                </thead>
-                <tbody id="temp-tbl"></tbody>
-            </table>
-        </div>
+        </div>{{-- /tab-dashboard --}}
 
-        {{-- Light Table --}}
-        <div class="panel overflow-x-auto mb-5">
-            <h2 class="text-sm text-gray-500 mb-3 uppercase tracking-wider">10 Pembacaan Cahaya Terbaru</h2>
-            <table class="w-full border-collapse text-sm">
-                <thead>
-                    <tr>
-                        <th class="table-th">#</th>
-                        <th class="table-th">Lux</th>
-                        <th class="table-th">Waktu</th>
-                    </tr>
-                </thead>
-                <tbody id="tbl"></tbody>
-            </table>
+        {{-- Tab: Readings (hidden by default) --}}
+        <div id="tab-readings" class="hidden">
+            {{-- Temperature Table --}}
+            <div class="panel overflow-x-auto mb-5">
+                <h2 class="text-sm text-gray-500 mb-3 uppercase tracking-wider">10 Pembacaan Suhu Terbaru</h2>
+                <table class="w-full border-collapse text-sm">
+                    <thead>
+                        <tr>
+                            <th class="table-th">#</th>
+                            <th class="table-th">Suhu (&deg;C)</th>
+                            <th class="table-th">Kelembapan (%)</th>
+                            <th class="table-th">Waktu</th>
+                        </tr>
+                    </thead>
+                    <tbody id="temp-tbl"></tbody>
+                </table>
+            </div>
+
+            {{-- Light Table --}}
+            <div class="panel overflow-x-auto mb-5">
+                <h2 class="text-sm text-gray-500 mb-3 uppercase tracking-wider">10 Pembacaan Cahaya Terbaru</h2>
+                <table class="w-full border-collapse text-sm">
+                    <thead>
+                        <tr>
+                            <th class="table-th">#</th>
+                            <th class="table-th">Lux</th>
+                            <th class="table-th">Waktu</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbl"></tbody>
+                </table>
+            </div>
         </div>
 
         <div class="text-center mt-5 text-xs text-gray-700" id="footer">
