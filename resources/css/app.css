@@ -69,6 +69,18 @@
 .lux-cell {
     @apply text-forest-light font-bold;
 }
+.temp-cell {
+    @apply text-orange-400 font-bold;
+}
+.hum-cell {
+    @apply text-sky-400 font-bold;
+}
+#temp-tbl td {
+    @apply py-2.5 px-3.5 border-b border-white/5;
+}
+#temp-tbl tr:hover td {
+    @apply bg-orange-500/5;
+}
 
 /* Status dot */
 .status-dot {

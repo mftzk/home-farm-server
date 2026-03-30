@@ -16,7 +16,7 @@
             IoT<span class="text-forest-light">Dashboard</span>
         </h1>
         <p class="text-center text-sm text-gray-600 mb-5">
-            ESP8266 &mdash; Light Monitor + Relay Control
+            ESP8266 &mdash; Light Monitor + Temp/Humidity + Relay Control
         </p>
 
         {{-- Range buttons --}}
@@ -53,6 +53,51 @@
                 <div class="card-unit">lux</div>
             </div>
         </div>
+
+        {{-- Temperature & Humidity stat cards --}}
+        <h2 class="section-title">Suhu & Kelembapan (SHT40)</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3.5 mb-5">
+            <div class="card">
+                <div class="card-label">
+                    <span class="status-dot ok" id="temp-dot"></span>Suhu
+                </div>
+                <div class="card-value text-orange-400" id="t-cur">--</div>
+                <div class="card-unit">&deg;C</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Min Suhu</div>
+                <div class="card-value text-orange-300" id="t-min">--</div>
+                <div class="card-unit">&deg;C</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Max Suhu</div>
+                <div class="card-value text-orange-200" id="t-max">--</div>
+                <div class="card-unit">&deg;C</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Kelembapan</div>
+                <div class="card-value text-sky-400" id="h-cur">--</div>
+                <div class="card-unit">%</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Min Hum</div>
+                <div class="card-value text-sky-300" id="h-min">--</div>
+                <div class="card-unit">%</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Max Hum</div>
+                <div class="card-value text-sky-200" id="h-max">--</div>
+                <div class="card-unit">%</div>
+            </div>
+        </div>
+
+        {{-- Temperature chart --}}
+        <div class="panel mb-5">
+            <canvas id="temp-chart"></canvas>
+        </div>
+
+        {{-- Light stat cards title --}}
+        <h2 class="section-title">Cahaya (BH1750)</h2>
 
         {{-- Chart (left) + Relay (right) --}}
         <div class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 mb-5">
@@ -92,9 +137,25 @@
 
         </div>
 
-        {{-- Table --}}
+        {{-- Temperature Table --}}
         <div class="panel overflow-x-auto mb-5">
-            <h2 class="text-sm text-gray-500 mb-3 uppercase tracking-wider">10 Pembacaan Terbaru</h2>
+            <h2 class="text-sm text-gray-500 mb-3 uppercase tracking-wider">10 Pembacaan Suhu Terbaru</h2>
+            <table class="w-full border-collapse text-sm">
+                <thead>
+                    <tr>
+                        <th class="table-th">#</th>
+                        <th class="table-th">Suhu (&deg;C)</th>
+                        <th class="table-th">Kelembapan (%)</th>
+                        <th class="table-th">Waktu</th>
+                    </tr>
+                </thead>
+                <tbody id="temp-tbl"></tbody>
+            </table>
+        </div>
+
+        {{-- Light Table --}}
+        <div class="panel overflow-x-auto mb-5">
+            <h2 class="text-sm text-gray-500 mb-3 uppercase tracking-wider">10 Pembacaan Cahaya Terbaru</h2>
             <table class="w-full border-collapse text-sm">
                 <thead>
                     <tr>
