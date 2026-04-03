@@ -124,11 +124,13 @@
                     @for ($i = 0; $i < 4; $i++)
                     <div class="relay-card" id="relay-card-{{ $i }}">
                         <div class="relay-card-header">
-                            <div class="card-label">Relay {{ $i + 1 }}</div>
-                            <div class="relay-card-actions">
-                                <span class="auto-badge hidden" id="auto-badge-{{ $i }}">AUTO</span>
-                                <button class="gear-btn" onclick="window.openAutoConfig({{ $i }})" title="Auto-mode settings">&#9881;</button>
+                            <div class="relay-title-block">
+                                <div class="relay-card-label">Relay {{ $i + 1 }}</div>
+                                <div class="relay-badge-slot">
+                                    <span class="auto-badge hidden" id="auto-badge-{{ $i }}">AUTO</span>
+                                </div>
                             </div>
+                            <button type="button" class="gear-btn shrink-0" onclick="window.openAutoConfig({{ $i }})" title="Pengaturan auto-mode">&#9881;</button>
                         </div>
                         <label class="relay-switch" id="relay-switch-{{ $i }}">
                             <input type="checkbox" id="relay-{{ $i }}" onchange="window.toggleRelay({{ $i }}, this.checked)">
