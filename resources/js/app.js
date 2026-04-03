@@ -306,12 +306,6 @@ window.saveAutoConfig = async function () {
     const thresholdOff = parseFloat(document.getElementById('modal-threshold-off').value);
     const errorEl = document.getElementById('modal-error');
 
-    if (Number.isNaN(relayId) || relayId < 0 || relayId > 3) {
-        errorEl.textContent = 'Relay tidak valid';
-        errorEl.classList.remove('hidden');
-        return;
-    }
-
     if (condition === 'below' && thresholdOff <= thresholdOn) {
         errorEl.textContent = 'Untuk kondisi "di bawah", threshold OFF harus lebih besar dari threshold ON';
         errorEl.classList.remove('hidden');
