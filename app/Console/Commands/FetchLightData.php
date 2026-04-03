@@ -11,11 +11,11 @@ class FetchLightData extends Command
 {
     protected $signature = 'app:fetch-light-data';
 
-    protected $description = 'Pull lux reading from ESP8266 BH1750 sensor and store it';
+    protected $description = 'Pull lux reading from ESP32 BH1750 sensor and store it';
 
     public function handle(): int
     {
-        $ip = config('esp.ip');
+        $ip = config('esp.temp_ip');
         $timeout = config('esp.timeout');
         $url = "http://{$ip}/data";
 

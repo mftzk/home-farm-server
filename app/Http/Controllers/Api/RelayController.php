@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\RelayAutoConfig;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -39,6 +40,9 @@ class RelayController extends Controller
             $response = Http::timeout(config('esp.timeout'))
                 ->get($this->espUrl('/relay'), ['id' => $id, 'state' => $state]);
 
+            RelayAutoConfig::where('relay_id', $id)
+                ->update(['last_auto_state' => (bool) $state]);
+
             return response()->json($response->json());
         } catch (\Exception $e) {
             return response()->json(['error' => 'ESP relay tidak merespons'], 502);
@@ -57,9 +61,32 @@ class RelayController extends Controller
             $response = Http::timeout(config('esp.timeout'))
                 ->get($this->espUrl('/all'), ['state' => $state]);
 
+            RelayAutoConfig::where('auto_enabled', true)
+                ->update(['last_auto_state' => (bool) $state]);
+
             return response()->json($response->json());
         } catch (\Exception $e) {
             return response()->json(['error' => 'ESP relay tidak merespons'], 502);
         }
+    }
+
+    public function autoConfig(): JsonResponse
+    {
+        return response()->json(RelayAutoConfig::all());
+    }
+
+    public function updateAutoConfig(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'relay_id' => 'required|integer|between:0,3',
+            'auto_enabled' => 'required|boolean',
+            'lux_on_below' => 'required|numeric|min:0',
+            'lux_off_above' => 'required|numeric|min:0|gt:lux_on_below',
+        ]);
+
+        $config = RelayAutoConfig::findOrFail($validated['relay_id']);
+        $config->update($validated);
+
+        return response()->json($config);
     }
 }

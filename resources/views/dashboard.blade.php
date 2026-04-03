@@ -123,8 +123,14 @@
                 <div class="grid grid-cols-2 gap-2.5 mb-3" id="relay-cards">
                     @for ($i = 0; $i < 4; $i++)
                     <div class="relay-card" id="relay-card-{{ $i }}">
-                        <div class="card-label">Relay {{ $i + 1 }}</div>
-                        <label class="relay-switch">
+                        <div class="relay-card-header">
+                            <div class="card-label">Relay {{ $i + 1 }}</div>
+                            <div class="relay-card-actions">
+                                <span class="auto-badge hidden" id="auto-badge-{{ $i }}">AUTO</span>
+                                <button class="gear-btn" onclick="window.openAutoConfig({{ $i }})" title="Auto-mode settings">&#9881;</button>
+                            </div>
+                        </div>
+                        <label class="relay-switch" id="relay-switch-{{ $i }}">
                             <input type="checkbox" id="relay-{{ $i }}" onchange="window.toggleRelay({{ $i }}, this.checked)">
                             <span class="relay-slider"></span>
                         </label>
@@ -184,6 +190,36 @@
 
         <div class="text-center mt-5 text-xs text-gray-700" id="footer">
             Auto-refresh 60 detik
+        </div>
+    </div>
+
+    {{-- Auto-mode config modal --}}
+    <div class="modal-overlay hidden" id="auto-modal">
+        <div class="modal-content">
+            <h3 class="text-sm font-bold text-gray-200 mb-4">Auto-Mode — <span id="modal-relay-name">Relay 1</span></h3>
+            <input type="hidden" id="modal-relay-id">
+
+            <label class="flex items-center gap-2 mb-4 cursor-pointer">
+                <input type="checkbox" id="modal-auto-enabled" class="accent-forest">
+                <span class="text-sm text-gray-300">Aktifkan auto-mode</span>
+            </label>
+
+            <div class="mb-3">
+                <label class="text-xs text-gray-500 block mb-1">Nyalakan jika lux di bawah</label>
+                <input type="number" id="modal-lux-on" class="modal-input" min="0" step="1">
+            </div>
+
+            <div class="mb-4">
+                <label class="text-xs text-gray-500 block mb-1">Matikan jika lux di atas</label>
+                <input type="number" id="modal-lux-off" class="modal-input" min="0" step="1">
+            </div>
+
+            <div class="text-xs text-red-400 mb-3 hidden" id="modal-error"></div>
+
+            <div class="flex justify-end gap-2">
+                <button class="modal-btn modal-btn-cancel" onclick="window.closeAutoModal()">Batal</button>
+                <button class="modal-btn modal-btn-save" onclick="window.saveAutoConfig()">Simpan</button>
+            </div>
         </div>
     </div>
 </body>

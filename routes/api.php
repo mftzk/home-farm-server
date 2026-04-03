@@ -12,4 +12,6 @@ Route::prefix('relay')->group(function () {
     Route::get('/status', [RelayController::class, 'status']);
     Route::post('/toggle', [RelayController::class, 'toggle']);
     Route::post('/all', [RelayController::class, 'all']);
+    Route::get('/auto-config', [RelayController::class, 'autoConfig']);
+    Route::post('/auto-config', [RelayController::class, 'updateAutoConfig']);
 });
