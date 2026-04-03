@@ -249,9 +249,25 @@ function normalizeAutoConfig(config) {
     };
 }
 
+function upsertAutoConfig(config) {
+    const normalized = normalizeAutoConfig(config);
+    const index = autoConfigs.findIndex((item) => item.relay_id === normalized.relay_id);
+
+    if (index === -1) {
+        autoConfigs.push(normalized);
+    } else {
+        autoConfigs[index] = normalized;
+    }
+}
+
 async function fetchAutoConfig() {
     try {
-        const res = await fetch(`${RELAY_API}/auto-config`);
+        const res = await fetch(`${RELAY_API}/auto-config`, {
+            cache: 'no-store',
+            headers: {
+                Accept: 'application/json',
+            },
+        });
         const configs = await res.json();
         autoConfigs = Array.isArray(configs) ? configs.map(normalizeAutoConfig) : [];
         updateAutoUI();
@@ -261,6 +277,13 @@ async function fetchAutoConfig() {
 }
 
 function updateAutoUI() {
+    for (let relayId = 0; relayId < 4; relayId++) {
+        const badge = document.getElementById(`auto-badge-${relayId}`);
+        const sw = document.getElementById(`relay-switch-${relayId}`);
+        if (badge) badge.classList.add('hidden');
+        if (sw) sw.classList.remove('auto-dimmed');
+    }
+
     for (const config of autoConfigs) {
         const badge = document.getElementById(`auto-badge-${config.relay_id}`);
         const sw = document.getElementById(`relay-switch-${config.relay_id}`);
@@ -318,13 +341,15 @@ window.saveAutoConfig = async function () {
     const thresholdOff = parseFloat(document.getElementById('modal-threshold-off').value);
     const errorEl = document.getElementById('modal-error');
 
-    if (condition === 'below' && thresholdOff <= thresholdOn) {
+    errorEl.classList.add('hidden');
+
+    if (autoEnabled && condition === 'below' && thresholdOff <= thresholdOn) {
         errorEl.textContent = 'Untuk kondisi "di bawah", threshold OFF harus lebih besar dari threshold ON';
         errorEl.classList.remove('hidden');
         return;
     }
 
-    if (condition === 'above' && thresholdOff >= thresholdOn) {
+    if (autoEnabled && condition === 'above' && thresholdOff >= thresholdOn) {
         errorEl.textContent = 'Untuk kondisi "di atas", threshold OFF harus lebih kecil dari threshold ON';
         errorEl.classList.remove('hidden');
         return;
@@ -364,8 +389,11 @@ window.saveAutoConfig = async function () {
             throw new Error(msg);
         }
 
+        const savedConfig = normalizeAutoConfig(await res.json());
+        upsertAutoConfig(savedConfig);
+        updateAutoUI();
         window.closeAutoModal();
-        fetchAutoConfig();
+        void fetchAutoConfig();
     } catch (e) {
         errorEl.textContent = e.message;
         errorEl.classList.remove('hidden');
