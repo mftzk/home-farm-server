@@ -241,10 +241,19 @@ async function fetchTempData() {
 let autoConfigs = [];
 let currentModalRelayId = null;
 
+function normalizeAutoConfig(config) {
+    return {
+        ...config,
+        relay_id: Number(config.relay_id),
+        auto_enabled: config.auto_enabled === true || config.auto_enabled === 1 || config.auto_enabled === '1',
+    };
+}
+
 async function fetchAutoConfig() {
     try {
         const res = await fetch(`${RELAY_API}/auto-config`);
-        autoConfigs = await res.json();
+        const configs = await res.json();
+        autoConfigs = Array.isArray(configs) ? configs.map(normalizeAutoConfig) : [];
         updateAutoUI();
     } catch (e) {
         // silent fail
