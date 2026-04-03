@@ -194,7 +194,7 @@
     </div>
 
     {{-- Auto-mode config modal --}}
-    <div class="modal-overlay hidden" id="auto-modal">
+    <div class="modal-overlay" id="auto-modal" style="display:none">
         <div class="modal-content">
             <h3 class="text-sm font-bold text-gray-200 mb-4">Auto-Mode — <span id="modal-relay-name">Relay 1</span></h3>
 

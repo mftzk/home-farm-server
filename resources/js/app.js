@@ -291,11 +291,12 @@ window.openAutoConfig = function (relayId) {
     document.getElementById('modal-threshold-off').value = config.threshold_off ?? 100;
     document.getElementById('modal-error').classList.add('hidden');
     window.updateModalLabels();
-    document.getElementById('auto-modal').classList.remove('hidden');
+    document.getElementById('auto-modal').style.display = '';
 };
 
 window.closeAutoModal = function () {
-    document.getElementById('auto-modal')?.classList.add('hidden');
+    const modal = document.getElementById('auto-modal');
+    if (modal) modal.style.display = 'none';
     currentModalRelayId = null;
 };
 
