@@ -197,7 +197,6 @@
     <div class="modal-overlay hidden" id="auto-modal">
         <div class="modal-content">
             <h3 class="text-sm font-bold text-gray-200 mb-4">Auto-Mode — <span id="modal-relay-name">Relay 1</span></h3>
-            <input type="hidden" id="modal-relay-id">
 
             <label class="flex items-center gap-2 mb-4 cursor-pointer">
                 <input type="checkbox" id="modal-auto-enabled" class="accent-forest">

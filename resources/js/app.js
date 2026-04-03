@@ -239,6 +239,7 @@ async function fetchTempData() {
 // ===== RELAY AUTO-CONFIG =====
 
 let autoConfigs = [];
+let currentModalRelayId = null;
 
 async function fetchAutoConfig() {
     try {
@@ -280,8 +281,8 @@ window.updateModalLabels = function () {
 };
 
 window.openAutoConfig = function (relayId) {
+    currentModalRelayId = relayId;
     const config = autoConfigs.find((c) => c.relay_id === relayId) || {};
-    document.getElementById('modal-relay-id').value = relayId;
     document.getElementById('modal-relay-name').textContent = `Relay ${relayId + 1}`;
     document.getElementById('modal-auto-enabled').checked = config.auto_enabled || false;
     document.getElementById('modal-sensor-type').value = config.sensor_type || 'light';
@@ -295,10 +296,11 @@ window.openAutoConfig = function (relayId) {
 
 window.closeAutoModal = function () {
     document.getElementById('auto-modal')?.classList.add('hidden');
+    currentModalRelayId = null;
 };
 
 window.saveAutoConfig = async function () {
-    const relayId = parseInt(document.getElementById('modal-relay-id').value, 10);
+    const relayId = currentModalRelayId;
     const autoEnabled = document.getElementById('modal-auto-enabled').checked;
     const sensorType = document.getElementById('modal-sensor-type').value;
     const condition = document.getElementById('modal-condition').value;
