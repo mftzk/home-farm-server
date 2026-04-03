@@ -4,6 +4,7 @@ import 'chartjs-adapter-date-fns';
 const API = '/api/readings';
 const TEMP_API = '/api/temperature';
 const RELAY_API = '/api/relay';
+const INSIGHT_API = '/api/insight/daily';
 let currentRange = '24h';
 let chart;
 let tempChart;
@@ -499,6 +500,75 @@ window.allRelay = async function (state) {
     }
 };
 
+// ===== DAILY INSIGHT =====
+
+function trendHtml(trend) {
+    if (!trend || trend.percent === 0 || trend.direction === 'stable') {
+        return '<span class="trend-stable">&#9644; stabil vs kemarin</span>';
+    }
+    if (trend.direction === 'up') {
+        return `<span class="trend-up">&#9650; ${trend.percent}%</span> <span class="text-xs text-gray-600">vs kemarin</span>`;
+    }
+    return `<span class="trend-down">&#9660; ${trend.percent}%</span> <span class="text-xs text-gray-600">vs kemarin</span>`;
+}
+
+function formatVal(val, decimals = 1) {
+    return val !== null && val !== undefined ? parseFloat(val).toFixed(decimals) : '--';
+}
+
+function timeLabel(t) {
+    return t ? `(${t})` : '';
+}
+
+function updateInsightSection(prefix, data, unit) {
+    document.getElementById(`insight-${prefix}-avg`).textContent = formatVal(data.today.avg);
+    document.getElementById(`insight-${prefix}-trend`).innerHTML = trendHtml(data.trend);
+    document.getElementById(`insight-${prefix}-max`).textContent =
+        data.today.max !== null ? `${formatVal(data.today.max)} ${unit}` : '--';
+    document.getElementById(`insight-${prefix}-max-at`).textContent = timeLabel(data.today.max_at);
+    document.getElementById(`insight-${prefix}-min`).textContent =
+        data.today.min !== null ? `${formatVal(data.today.min)} ${unit}` : '--';
+    document.getElementById(`insight-${prefix}-min-at`).textContent = timeLabel(data.today.min_at);
+}
+
+function updateRelayInsight(relay) {
+    const el = document.getElementById('insight-relay');
+    if (!relay) {
+        el.innerHTML = '<span class="text-xs text-gray-600">Relay: data tidak tersedia</span>';
+        return;
+    }
+
+    const autoConfigs = (relay.configs || []).filter((c) => c.auto_enabled);
+    let badges = autoConfigs
+        .map((c) => {
+            const unit = c.sensor_type === 'light' ? 'lux' : '°C';
+            return `<span class="insight-relay-badge">R${c.relay_id + 1}: AUTO (${unit})</span>`;
+        })
+        .join('');
+
+    el.innerHTML =
+        `<span class="text-xs text-gray-500 font-semibold">Relay: ${relay.auto_enabled_count}/${relay.total} auto aktif</span>` +
+        (badges ? `<span class="insight-relay-badges">${badges}</span>` : '');
+}
+
+async function fetchInsight() {
+    try {
+        const res = await fetch(INSIGHT_API);
+        const json = await res.json();
+
+        const today = new Date();
+        const options = { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' };
+        document.getElementById('insight-date').textContent = today.toLocaleDateString('id-ID', options);
+
+        updateInsightSection('light', json.light, 'lux');
+        updateInsightSection('temp', json.temperature, '°C');
+        updateInsightSection('hum', json.humidity, '%');
+        updateRelayInsight(json.relay);
+    } catch (e) {
+        document.getElementById('insight-date').textContent = 'Gagal memuat insight';
+    }
+}
+
 // ===== TABS =====
 
 document.querySelectorAll('#tab-bar button').forEach((btn) => {
@@ -520,7 +590,9 @@ fetchData();
 fetchTempData();
 fetchRelayStatus();
 fetchAutoConfig();
+fetchInsight();
 setInterval(fetchData, 60000);
 setInterval(fetchTempData, 60000);
 setInterval(fetchRelayStatus, 3000);
 setInterval(fetchAutoConfig, 10000);
+setInterval(fetchInsight, 300000);

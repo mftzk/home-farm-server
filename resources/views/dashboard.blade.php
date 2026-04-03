@@ -37,6 +37,102 @@
             <button data-range="30d" class="range-btn">30 Hari</button>
         </div>
 
+        {{-- Daily Insight --}}
+        <div class="insight-panel mb-5" id="insight-panel">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-sm font-bold text-gray-300 uppercase tracking-wider">Insight Hari Ini</h2>
+                <span class="text-xs text-gray-600" id="insight-date">--</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+                {{-- Light insight --}}
+                <div class="insight-card">
+                    <div class="insight-card-header">
+                        <span class="insight-icon" style="color: #4a9d56;">&#9728;</span>
+                        <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Cahaya</span>
+                    </div>
+                    <div class="insight-avg">
+                        <span class="text-2xl font-bold text-forest-light" id="insight-light-avg">--</span>
+                        <span class="text-xs text-gray-600 ml-1">lux</span>
+                    </div>
+                    <div class="insight-trend" id="insight-light-trend">
+                        <span class="text-xs text-gray-600">vs kemarin: --</span>
+                    </div>
+                    <div class="insight-peaks">
+                        <div class="insight-peak-row">
+                            <span class="text-xs text-gray-600">Peak</span>
+                            <span class="text-xs font-semibold text-green-200" id="insight-light-max">--</span>
+                            <span class="text-xs text-gray-600" id="insight-light-max-at"></span>
+                        </div>
+                        <div class="insight-peak-row">
+                            <span class="text-xs text-gray-600">Low</span>
+                            <span class="text-xs font-semibold text-emerald-300" id="insight-light-min">--</span>
+                            <span class="text-xs text-gray-600" id="insight-light-min-at"></span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Temperature insight --}}
+                <div class="insight-card">
+                    <div class="insight-card-header">
+                        <span class="insight-icon" style="color: #f97316;">&#127777;</span>
+                        <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Suhu</span>
+                    </div>
+                    <div class="insight-avg">
+                        <span class="text-2xl font-bold text-orange-400" id="insight-temp-avg">--</span>
+                        <span class="text-xs text-gray-600 ml-1">&deg;C</span>
+                    </div>
+                    <div class="insight-trend" id="insight-temp-trend">
+                        <span class="text-xs text-gray-600">vs kemarin: --</span>
+                    </div>
+                    <div class="insight-peaks">
+                        <div class="insight-peak-row">
+                            <span class="text-xs text-gray-600">Peak</span>
+                            <span class="text-xs font-semibold text-orange-200" id="insight-temp-max">--</span>
+                            <span class="text-xs text-gray-600" id="insight-temp-max-at"></span>
+                        </div>
+                        <div class="insight-peak-row">
+                            <span class="text-xs text-gray-600">Low</span>
+                            <span class="text-xs font-semibold text-orange-300" id="insight-temp-min">--</span>
+                            <span class="text-xs text-gray-600" id="insight-temp-min-at"></span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Humidity insight --}}
+                <div class="insight-card">
+                    <div class="insight-card-header">
+                        <span class="insight-icon" style="color: #38bdf8;">&#128167;</span>
+                        <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Kelembapan</span>
+                    </div>
+                    <div class="insight-avg">
+                        <span class="text-2xl font-bold text-sky-400" id="insight-hum-avg">--</span>
+                        <span class="text-xs text-gray-600 ml-1">%</span>
+                    </div>
+                    <div class="insight-trend" id="insight-hum-trend">
+                        <span class="text-xs text-gray-600">vs kemarin: --</span>
+                    </div>
+                    <div class="insight-peaks">
+                        <div class="insight-peak-row">
+                            <span class="text-xs text-gray-600">Peak</span>
+                            <span class="text-xs font-semibold text-sky-200" id="insight-hum-max">--</span>
+                            <span class="text-xs text-gray-600" id="insight-hum-max-at"></span>
+                        </div>
+                        <div class="insight-peak-row">
+                            <span class="text-xs text-gray-600">Low</span>
+                            <span class="text-xs font-semibold text-sky-300" id="insight-hum-min">--</span>
+                            <span class="text-xs text-gray-600" id="insight-hum-min-at"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Relay summary --}}
+            <div class="insight-relay" id="insight-relay">
+                <span class="text-xs text-gray-600">Relay: memuat...</span>
+            </div>
+        </div>
+
         {{-- Stat cards --}}
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mb-5">
             <div class="card">
