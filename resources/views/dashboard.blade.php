@@ -205,13 +205,29 @@
             </label>
 
             <div class="mb-3">
-                <label class="text-xs text-gray-500 block mb-1">Nyalakan jika lux di bawah</label>
-                <input type="number" id="modal-lux-on" class="modal-input" min="0" step="1">
+                <label class="text-xs text-gray-500 block mb-1">Tipe Sensor</label>
+                <select id="modal-sensor-type" class="modal-input" onchange="window.updateModalLabels()">
+                    <option value="light">Cahaya (lux)</option>
+                    <option value="temperature">Suhu (°C)</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="text-xs text-gray-500 block mb-1">Kondisi</label>
+                <select id="modal-condition" class="modal-input" onchange="window.updateModalLabels()">
+                    <option value="below">Di bawah threshold</option>
+                    <option value="above">Di atas threshold</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="text-xs text-gray-500 block mb-1" id="label-threshold-on">Nyalakan jika lux di bawah</label>
+                <input type="number" id="modal-threshold-on" class="modal-input" min="0" step="0.1">
             </div>
 
             <div class="mb-4">
-                <label class="text-xs text-gray-500 block mb-1">Matikan jika lux di atas</label>
-                <input type="number" id="modal-lux-off" class="modal-input" min="0" step="1">
+                <label class="text-xs text-gray-500 block mb-1" id="label-threshold-off">Matikan jika lux di atas</label>
+                <input type="number" id="modal-threshold-off" class="modal-input" min="0" step="0.1">
             </div>
 
             <div class="text-xs text-red-400 mb-3 hidden" id="modal-error"></div>

@@ -80,9 +80,19 @@ class RelayController extends Controller
         $validated = $request->validate([
             'relay_id' => 'required|integer|between:0,3',
             'auto_enabled' => 'required|boolean',
-            'lux_on_below' => 'required|numeric|min:0',
-            'lux_off_above' => 'required|numeric|min:0|gt:lux_on_below',
+            'sensor_type' => 'required|in:light,temperature',
+            'condition' => 'required|in:below,above',
+            'threshold_on' => 'required|numeric|min:0',
+            'threshold_off' => 'required|numeric|min:0',
         ]);
+
+        if ($validated['condition'] === 'below' && $validated['threshold_off'] <= $validated['threshold_on']) {
+            return response()->json(['message' => 'Untuk kondisi "di bawah", threshold OFF harus lebih besar dari threshold ON'], 422);
+        }
+
+        if ($validated['condition'] === 'above' && $validated['threshold_off'] >= $validated['threshold_on']) {
+            return response()->json(['message' => 'Untuk kondisi "di atas", threshold OFF harus lebih kecil dari threshold ON'], 422);
+        }
 
         $config = RelayAutoConfig::findOrFail($validated['relay_id']);
         $config->update($validated);

@@ -254,19 +254,42 @@ function updateAutoUI() {
     for (const config of autoConfigs) {
         const badge = document.getElementById(`auto-badge-${config.relay_id}`);
         const sw = document.getElementById(`relay-switch-${config.relay_id}`);
-        if (badge) badge.classList.toggle('hidden', !config.auto_enabled);
+        if (badge) {
+            badge.classList.toggle('hidden', !config.auto_enabled);
+            if (config.auto_enabled) {
+                const unit = config.sensor_type === 'light' ? 'lux' : '°C';
+                badge.textContent = `AUTO (${unit})`;
+            }
+        }
         if (sw) sw.classList.toggle('auto-dimmed', config.auto_enabled);
     }
 }
+
+window.updateModalLabels = function () {
+    const sensorType = document.getElementById('modal-sensor-type').value;
+    const condition = document.getElementById('modal-condition').value;
+    const unit = sensorType === 'light' ? 'lux' : '°C';
+
+    if (condition === 'below') {
+        document.getElementById('label-threshold-on').textContent = `Nyalakan jika ${unit} di bawah`;
+        document.getElementById('label-threshold-off').textContent = `Matikan jika ${unit} di atas`;
+    } else {
+        document.getElementById('label-threshold-on').textContent = `Nyalakan jika ${unit} di atas`;
+        document.getElementById('label-threshold-off').textContent = `Matikan jika ${unit} di bawah`;
+    }
+};
 
 window.openAutoConfig = function (relayId) {
     const config = autoConfigs.find((c) => c.relay_id === relayId) || {};
     document.getElementById('modal-relay-id').value = relayId;
     document.getElementById('modal-relay-name').textContent = `Relay ${relayId + 1}`;
     document.getElementById('modal-auto-enabled').checked = config.auto_enabled || false;
-    document.getElementById('modal-lux-on').value = config.lux_on_below ?? 50;
-    document.getElementById('modal-lux-off').value = config.lux_off_above ?? 100;
+    document.getElementById('modal-sensor-type').value = config.sensor_type || 'light';
+    document.getElementById('modal-condition').value = config.condition || 'below';
+    document.getElementById('modal-threshold-on').value = config.threshold_on ?? 50;
+    document.getElementById('modal-threshold-off').value = config.threshold_off ?? 100;
     document.getElementById('modal-error').classList.add('hidden');
+    window.updateModalLabels();
     document.getElementById('auto-modal').classList.remove('hidden');
 };
 
@@ -277,12 +300,20 @@ window.closeAutoModal = function () {
 window.saveAutoConfig = async function () {
     const relayId = parseInt(document.getElementById('modal-relay-id').value);
     const autoEnabled = document.getElementById('modal-auto-enabled').checked;
-    const luxOn = parseFloat(document.getElementById('modal-lux-on').value);
-    const luxOff = parseFloat(document.getElementById('modal-lux-off').value);
+    const sensorType = document.getElementById('modal-sensor-type').value;
+    const condition = document.getElementById('modal-condition').value;
+    const thresholdOn = parseFloat(document.getElementById('modal-threshold-on').value);
+    const thresholdOff = parseFloat(document.getElementById('modal-threshold-off').value);
     const errorEl = document.getElementById('modal-error');
 
-    if (luxOff <= luxOn) {
-        errorEl.textContent = 'Threshold mati harus lebih besar dari threshold nyala';
+    if (condition === 'below' && thresholdOff <= thresholdOn) {
+        errorEl.textContent = 'Untuk kondisi "di bawah", threshold OFF harus lebih besar dari threshold ON';
+        errorEl.classList.remove('hidden');
+        return;
+    }
+
+    if (condition === 'above' && thresholdOff >= thresholdOn) {
+        errorEl.textContent = 'Untuk kondisi "di atas", threshold OFF harus lebih kecil dari threshold ON';
         errorEl.classList.remove('hidden');
         return;
     }
@@ -297,8 +328,10 @@ window.saveAutoConfig = async function () {
             body: JSON.stringify({
                 relay_id: relayId,
                 auto_enabled: autoEnabled,
-                lux_on_below: luxOn,
-                lux_off_above: luxOff,
+                sensor_type: sensorType,
+                condition: condition,
+                threshold_on: thresholdOn,
+                threshold_off: thresholdOff,
             }),
         });
 

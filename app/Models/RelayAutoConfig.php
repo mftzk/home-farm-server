@@ -13,8 +13,10 @@ class RelayAutoConfig extends Model
     protected $fillable = [
         'relay_id',
         'auto_enabled',
-        'lux_on_below',
-        'lux_off_above',
+        'sensor_type',
+        'condition',
+        'threshold_on',
+        'threshold_off',
         'last_auto_state',
     ];
 
@@ -22,8 +24,8 @@ class RelayAutoConfig extends Model
     {
         return [
             'auto_enabled' => 'boolean',
-            'lux_on_below' => 'float',
-            'lux_off_above' => 'float',
+            'threshold_on' => 'float',
+            'threshold_off' => 'float',
             'last_auto_state' => 'boolean',
         ];
     }
