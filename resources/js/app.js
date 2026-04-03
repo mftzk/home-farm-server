@@ -294,17 +294,23 @@ window.openAutoConfig = function (relayId) {
 };
 
 window.closeAutoModal = function () {
-    document.getElementById('auto-modal').classList.add('hidden');
+    document.getElementById('auto-modal')?.classList.add('hidden');
 };
 
 window.saveAutoConfig = async function () {
-    const relayId = parseInt(document.getElementById('modal-relay-id').value);
+    const relayId = parseInt(document.getElementById('modal-relay-id').value, 10);
     const autoEnabled = document.getElementById('modal-auto-enabled').checked;
     const sensorType = document.getElementById('modal-sensor-type').value;
     const condition = document.getElementById('modal-condition').value;
     const thresholdOn = parseFloat(document.getElementById('modal-threshold-on').value);
     const thresholdOff = parseFloat(document.getElementById('modal-threshold-off').value);
     const errorEl = document.getElementById('modal-error');
+
+    if (Number.isNaN(relayId) || relayId < 0 || relayId > 3) {
+        errorEl.textContent = 'Relay tidak valid';
+        errorEl.classList.remove('hidden');
+        return;
+    }
 
     if (condition === 'below' && thresholdOff <= thresholdOn) {
         errorEl.textContent = 'Untuk kondisi "di bawah", threshold OFF harus lebih besar dari threshold ON';
@@ -323,7 +329,8 @@ window.saveAutoConfig = async function () {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken,
+                Accept: 'application/json',
+                ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {}),
             },
             body: JSON.stringify({
                 relay_id: relayId,
@@ -336,8 +343,19 @@ window.saveAutoConfig = async function () {
         });
 
         if (!res.ok) {
-            const json = await res.json();
-            throw new Error(json.message || 'Gagal menyimpan');
+            let msg = 'Gagal menyimpan';
+            const bodyText = await res.text();
+            try {
+                const json = JSON.parse(bodyText);
+                const errMsg =
+                    json.message ||
+                    json.error ||
+                    (json.errors && Object.values(json.errors).flat().join(' '));
+                if (errMsg) msg = String(errMsg);
+            } catch {
+                if (bodyText) msg = bodyText.slice(0, 200);
+            }
+            throw new Error(msg);
         }
 
         window.closeAutoModal();
@@ -348,10 +366,30 @@ window.saveAutoConfig = async function () {
     }
 };
 
-// close modal on overlay click
-document.getElementById('auto-modal')?.addEventListener('click', function (e) {
-    if (e.target === this) window.closeAutoModal();
-});
+function initAutoModal() {
+    const modal = document.getElementById('auto-modal');
+    const panel = modal?.querySelector('.modal-content');
+    const cancelBtn = document.getElementById('auto-modal-cancel');
+    const saveBtn = document.getElementById('auto-modal-save');
+
+    if (!modal) return;
+
+    panel?.addEventListener('click', (e) => e.stopPropagation());
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) window.closeAutoModal();
+    });
+
+    cancelBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.closeAutoModal();
+    });
+
+    saveBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        void window.saveAutoConfig();
+    });
+}
 
 // ===== RELAY CONTROL =====
 
@@ -443,6 +481,7 @@ document.querySelectorAll('#tab-bar button').forEach((btn) => {
 
 initChart();
 initTempChart();
+initAutoModal();
 fetchData();
 fetchTempData();
 fetchRelayStatus();

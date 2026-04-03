@@ -233,8 +233,8 @@
             <div class="text-xs text-red-400 mb-3 hidden" id="modal-error"></div>
 
             <div class="flex justify-end gap-2">
-                <button class="modal-btn modal-btn-cancel" onclick="window.closeAutoModal()">Batal</button>
-                <button class="modal-btn modal-btn-save" onclick="window.saveAutoConfig()">Simpan</button>
+                <button type="button" class="modal-btn modal-btn-cancel" id="auto-modal-cancel">Batal</button>
+                <button type="button" class="modal-btn modal-btn-save" id="auto-modal-save">Simpan</button>
             </div>
         </div>
     </div>

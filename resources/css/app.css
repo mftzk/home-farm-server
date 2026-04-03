@@ -189,7 +189,7 @@
 
 /* Modal */
 .modal-overlay {
-    @apply fixed inset-0 bg-black/60 flex items-center justify-center z-50;
+    @apply fixed inset-0 bg-black/60 flex items-center justify-center z-[200];
 }
 .modal-content {
     @apply bg-dark-800 rounded-2xl p-6 w-[320px] border border-white/10 shadow-xl;
