@@ -7,6 +7,7 @@ const RELAY_API = '/api/relay';
 const INSIGHT_API = '/api/insight/daily';
 let currentRange = '24h';
 let currentTempMetric = 'avg'; // 'min' | 'avg' | 'max' — only relevant for 7d/30d
+let lastTempData = null;       // cache last fetched temp data to avoid re-fetch on metric switch
 let chart;
 let tempChart;
 
@@ -122,7 +123,7 @@ document.querySelectorAll('#temp-metric-bar button').forEach((btn) => {
         document.querySelector('#temp-metric-bar .active')?.classList.remove('active');
         btn.classList.add('active');
         currentTempMetric = btn.dataset.metric;
-        fetchTempData();
+        if (lastTempData) applyTempMetric(lastTempData); // re-render from cache, no re-fetch
     });
 });
 
@@ -219,30 +220,35 @@ function initTempChart() {
     });
 }
 
+function applyTempMetric(json) {
+    const isAggregated = AGGREGATED_RANGES.includes(currentRange);
+    const metric = isAggregated ? currentTempMetric : 'avg';
+
+    const tempField = metric === 'min' ? 'min_temp' : metric === 'max' ? 'max_temp' : 'temperature';
+    const humField  = metric === 'min' ? 'min_hum'  : metric === 'max' ? 'max_hum'  : 'humidity';
+
+    const metricLabel = metric === 'min' ? 'Min ' : metric === 'max' ? 'Max ' : '';
+    tempChart.data.datasets[0].label = `${metricLabel}Suhu (°C)`;
+    tempChart.data.datasets[1].label = `${metricLabel}Kelembapan (%)`;
+
+    tempChart.data.datasets[0].data = json.data.map((r) => ({
+        x: new Date(r.recorded_at),
+        y: parseFloat(r[tempField]),
+    }));
+    tempChart.data.datasets[1].data = json.data.map((r) => ({
+        x: new Date(r.recorded_at),
+        y: parseFloat(r[humField]),
+    }));
+    tempChart.update('none');
+}
+
 async function fetchTempData() {
     try {
         const res = await fetch(`${TEMP_API}?range=${currentRange}&stats=1&limit=2000`);
         const json = await res.json();
 
-        const isAggregated = AGGREGATED_RANGES.includes(currentRange);
-        const metric = isAggregated ? currentTempMetric : 'avg';
-
-        const tempField = metric === 'min' ? 'min_temp' : metric === 'max' ? 'max_temp' : 'temperature';
-        const humField  = metric === 'min' ? 'min_hum'  : metric === 'max' ? 'max_hum'  : 'humidity';
-
-        const metricLabel = metric === 'min' ? 'Min ' : metric === 'max' ? 'Max ' : '';
-        tempChart.data.datasets[0].label = `${metricLabel}Suhu (°C)`;
-        tempChart.data.datasets[1].label = `${metricLabel}Kelembapan (%)`;
-
-        tempChart.data.datasets[0].data = json.data.map((r) => ({
-            x: new Date(r.recorded_at),
-            y: parseFloat(r[tempField]),
-        }));
-        tempChart.data.datasets[1].data = json.data.map((r) => ({
-            x: new Date(r.recorded_at),
-            y: parseFloat(r[humField]),
-        }));
-        tempChart.update('none');
+        lastTempData = json;
+        applyTempMetric(json);
 
         if (json.latest) {
             document.getElementById('t-cur').textContent = parseFloat(json.latest.temperature).toFixed(1);
