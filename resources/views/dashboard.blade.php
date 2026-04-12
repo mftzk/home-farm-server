@@ -211,7 +211,7 @@
         <h2 class="section-title">Cahaya (BH1750)</h2>
 
         {{-- Chart (left) + Relay (right) --}}
-        <div class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 mb-5">
+        <div class="grid grid-cols-1 xl:grid-cols-[1fr_280px] gap-4 mb-5">
 
             {{-- Chart --}}
             <div class="panel">
