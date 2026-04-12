@@ -21,6 +21,7 @@ services:
       ESP_RELAY_IP: 192.168.88.247  # IP ESP8266 relay control
       ESP_TEMP_IP: 192.168.88.169   # IP ESP32 sensor suhu SHT40
       ESP_TIMEOUT: 5
+      TZ: Asia/Jakarta
     depends_on:
       db:
         condition: service_healthy
@@ -33,6 +34,7 @@ services:
     environment:
       MARIADB_ROOT_PASSWORD: lightpass
       MARIADB_DATABASE: esp8266_light
+      TZ: Asia/Jakarta
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
