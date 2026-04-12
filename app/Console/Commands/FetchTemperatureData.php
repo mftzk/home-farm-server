@@ -61,6 +61,13 @@ class FetchTemperatureData extends Command
         $temperature = (float) $data['t'];
         $humidity = (float) $data['h'];
 
+        if ($humidity < 0 || $humidity > 100) {
+            $this->error("INVALID HUMIDITY: h={$humidity} (out of range 0-100)");
+            Log::error("FetchTemperatureData: humidity out of range h={$humidity}");
+
+            return self::FAILURE;
+        }
+
         TemperatureReading::create([
             'temperature' => $temperature,
             'humidity' => $humidity,
