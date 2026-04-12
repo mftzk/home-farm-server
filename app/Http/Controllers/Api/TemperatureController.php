@@ -38,7 +38,7 @@ class TemperatureController extends Controller
             $data = TemperatureReading::where('recorded_at', '>=', DB::raw("NOW() - INTERVAL {$interval}"))
                 ->where('temperature', '>=', 5)
                 ->whereBetween('humidity', [5, 100])
-                ->selectRaw("{$groupBy} AS recorded_at, ROUND(AVG(temperature), 1) AS temperature, ROUND(AVG(humidity), 1) AS humidity")
+                ->selectRaw("{$groupBy} AS recorded_at, ROUND(AVG(temperature), 1) AS temperature, ROUND(MIN(temperature), 1) AS min_temp, ROUND(MAX(temperature), 1) AS max_temp, ROUND(AVG(humidity), 1) AS humidity, ROUND(MIN(humidity), 1) AS min_hum, ROUND(MAX(humidity), 1) AS max_hum")
                 ->groupByRaw($groupBy)
                 ->orderBy('recorded_at')
                 ->get();

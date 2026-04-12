@@ -198,6 +198,12 @@
 
         {{-- Temperature chart --}}
         <div class="panel mb-5">
+            <div id="temp-metric-bar" class="hidden flex justify-end gap-1 mb-2">
+                <span class="text-xs text-gray-600 self-center mr-1">Tampilkan:</span>
+                <button data-metric="min" class="metric-btn">Min</button>
+                <button data-metric="avg" class="metric-btn active">Avg</button>
+                <button data-metric="max" class="metric-btn">Max</button>
+            </div>
             <canvas id="temp-chart"></canvas>
         </div>
 

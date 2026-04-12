@@ -255,6 +255,18 @@
            bg-amber-500/20 px-2 py-0.5 text-amber-400;
 }
 
+/* Metric toggle buttons (min/avg/max — shown only for 7d/30d aggregated ranges) */
+.metric-btn {
+    @apply bg-dark-700 text-gray-500 border border-white/10 rounded-full
+           px-3 py-1 cursor-pointer text-xs transition-all duration-200;
+}
+.metric-btn:hover {
+    @apply border-orange-500/50 text-gray-300;
+}
+.metric-btn.active {
+    @apply bg-orange-500/20 text-orange-400 border-orange-500/50 font-semibold;
+}
+
 /* Modal */
 .modal-overlay {
     @apply fixed inset-0 bg-black/60 flex items-center justify-center z-[200];
