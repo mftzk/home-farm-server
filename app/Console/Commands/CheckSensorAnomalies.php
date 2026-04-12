@@ -22,20 +22,17 @@ class CheckSensorAnomalies extends Command
     private const STALE_THRESHOLD_MINUTES = 5;
 
     /**
-     * How long (seconds) to suppress repeat alerts for the same anomaly.
+     * How long (seconds) to suppress repeat Discord alerts for the same anomaly.
      */
     private const ALERT_COOLDOWN_SECONDS = 1800; // 30 minutes
 
     public function handle(DiscordService $discord): int
     {
-        $anomalies = [];
-
-        $anomalies = array_merge(
-            $anomalies,
+        $anomalies = array_values(array_filter([
             $this->checkLightSensor(),
             $this->checkTemperatureSensor(),
             $this->checkRelay(),
-        );
+        ]));
 
         if (empty($anomalies)) {
             $this->info('All sensors OK.');
@@ -44,32 +41,37 @@ class CheckSensorAnomalies extends Command
             return self::SUCCESS;
         }
 
+        // Log and print every active anomaly
         foreach ($anomalies as $anomaly) {
-            $this->error($anomaly['message']);
-            Log::warning("CheckSensorAnomalies: {$anomaly['message']}");
+            $msg = "{$anomaly['label']} disconnect: {$anomaly['detail']}";
+            $this->error($msg);
+            Log::warning("CheckSensorAnomalies: {$msg}");
         }
 
-        $this->sendDiscordAlert($discord, $anomalies);
+        // Only send Discord for anomalies whose cooldown has expired
+        $toAlert = array_values(array_filter($anomalies, fn ($a) => $this->shouldAlert($a['key'])));
+
+        if (! empty($toAlert)) {
+            $this->sendDiscordAlert($discord, $toAlert);
+        }
 
         return self::FAILURE;
     }
 
-    private function checkLightSensor(): array
+    // -------------------------------------------------------------------------
+
+    private function checkLightSensor(): ?array
     {
         $latest = LightReading::orderByDesc('recorded_at')->first();
 
         if (! $latest) {
-            return $this->buildAnomaly(
-                'light_sensor',
-                'Sensor Cahaya',
-                'Tidak ada data pembacaan sama sekali.'
-            );
+            return $this->anomaly('light_sensor', 'Sensor Cahaya', 'Tidak ada data pembacaan sama sekali.');
         }
 
         $age = (int) $latest->recorded_at->diffInMinutes(now());
 
         if ($age > self::STALE_THRESHOLD_MINUTES) {
-            return $this->buildAnomaly(
+            return $this->anomaly(
                 'light_sensor',
                 'Sensor Cahaya',
                 "Tidak ada pembacaan baru selama {$age} menit (terakhir: {$latest->recorded_at->format('H:i:s')})."
@@ -78,25 +80,21 @@ class CheckSensorAnomalies extends Command
 
         $this->resolveAlert('light_sensor');
 
-        return [];
+        return null;
     }
 
-    private function checkTemperatureSensor(): array
+    private function checkTemperatureSensor(): ?array
     {
         $latest = TemperatureReading::orderByDesc('recorded_at')->first();
 
         if (! $latest) {
-            return $this->buildAnomaly(
-                'temp_sensor',
-                'Sensor Suhu/Kelembaban',
-                'Tidak ada data pembacaan sama sekali.'
-            );
+            return $this->anomaly('temp_sensor', 'Sensor Suhu/Kelembaban', 'Tidak ada data pembacaan sama sekali.');
         }
 
         $age = (int) $latest->recorded_at->diffInMinutes(now());
 
         if ($age > self::STALE_THRESHOLD_MINUTES) {
-            return $this->buildAnomaly(
+            return $this->anomaly(
                 'temp_sensor',
                 'Sensor Suhu/Kelembaban',
                 "Tidak ada pembacaan baru selama {$age} menit (terakhir: {$latest->recorded_at->format('H:i:s')})."
@@ -105,10 +103,10 @@ class CheckSensorAnomalies extends Command
 
         $this->resolveAlert('temp_sensor');
 
-        return [];
+        return null;
     }
 
-    private function checkRelay(): array
+    private function checkRelay(): ?array
     {
         $ip = config('esp.relay_ip');
         $timeout = config('esp.timeout');
@@ -117,7 +115,7 @@ class CheckSensorAnomalies extends Command
             $response = Http::timeout($timeout)->get("http://{$ip}/status");
 
             if (! $response->successful()) {
-                return $this->buildAnomaly(
+                return $this->anomaly(
                     'relay',
                     'Relay Controller',
                     "Tidak merespons — HTTP {$response->status()} dari {$ip}."
@@ -126,9 +124,9 @@ class CheckSensorAnomalies extends Command
 
             $this->resolveAlert('relay');
 
-            return [];
+            return null;
         } catch (\Exception $e) {
-            return $this->buildAnomaly(
+            return $this->anomaly(
                 'relay',
                 'Relay Controller',
                 "Tidak dapat terhubung ke {$ip}: {$e->getMessage()}"
@@ -136,30 +134,30 @@ class CheckSensorAnomalies extends Command
         }
     }
 
+    // -------------------------------------------------------------------------
+
+    private function anomaly(string $key, string $label, string $detail): array
+    {
+        return ['key' => $key, 'label' => $label, 'detail' => $detail];
+    }
+
     /**
-     * Build an anomaly entry, but only return it if not currently in cooldown.
+     * Returns true if a Discord alert should be sent (i.e. not in cooldown).
+     * Marks the anomaly as alerted (starts cooldown) if it wasn't already.
      */
-    private function buildAnomaly(string $key, string $label, string $detail): array
+    private function shouldAlert(string $key): bool
     {
         $cacheKey = "anomaly_alerted_{$key}";
 
-        $alreadyAlerted = Cache::has($cacheKey);
+        if (Cache::has($cacheKey)) {
+            $this->warn("{$key}: alert already sent recently, skipping Discord.");
 
-        // Always store the latest state so it refreshes the cooldown window
-        Cache::put($cacheKey, true, self::ALERT_COOLDOWN_SECONDS);
-
-        if ($alreadyAlerted) {
-            $this->warn("{$label}: anomaly persists but alert already sent recently, skipping Discord.");
-
-            return [];
+            return false;
         }
 
-        return [[
-            'key' => $key,
-            'label' => $label,
-            'message' => "{$label} disconnect: {$detail}",
-            'detail' => $detail,
-        ]];
+        Cache::put($cacheKey, true, self::ALERT_COOLDOWN_SECONDS);
+
+        return true;
     }
 
     private function resolveAlert(string $key): void
@@ -194,7 +192,7 @@ class CheckSensorAnomalies extends Command
         $discord->sendEmbed([
             'title' => '🚨 Peringatan Anomali Sensor',
             'description' => 'Satu atau lebih perangkat terdeteksi tidak merespons.',
-            'color' => 0xED4245, // merah Discord
+            'color' => 0xED4245,
             'fields' => $fields,
             'footer' => ['text' => 'Home Farm Monitor'],
             'timestamp' => now()->toIso8601String(),
