@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script>window.__dashboardMode = @json($mode);</script>
 </head>
 <body class="bg-dark-900 text-gray-100 min-h-screen font-sans">
     <div class="max-w-[1100px] mx-auto px-4 py-6">
@@ -15,9 +16,17 @@
         <h1 class="text-center text-2xl font-bold text-white mb-1">
             IoT<span class="text-forest-light">Dashboard</span>
         </h1>
-        <p class="text-center text-sm text-gray-600 mb-5">
+        <p class="text-center text-sm text-gray-600 mb-3">
             ESP8266 &mdash; Light Monitor + Temp/Humidity + Relay Control
         </p>
+
+        {{-- Mode toggle --}}
+        <div class="flex justify-center mb-5">
+            <button id="mode-toggle" class="mode-btn" onclick="window.handleModeToggle()">
+                <span id="mode-icon">&#128274;</span>
+                <span id="mode-label">Mode Baca</span>
+            </button>
+        </div>
 
         {{-- Tab navigation --}}
         <div class="flex justify-center gap-2 mb-5" id="tab-bar">
@@ -232,9 +241,9 @@
                                     <span class="auto-badge hidden" id="auto-badge-{{ $i }}">AUTO</span>
                                 </div>
                             </div>
-                            <button type="button" class="gear-btn shrink-0" onclick="window.openAutoConfig({{ $i }})" title="Pengaturan auto-mode">&#9881;</button>
+                            <button type="button" class="gear-btn shrink-0" onclick="window.openAutoConfig({{ $i }})" title="Pengaturan auto-mode" data-edit-only>&#9881;</button>
                         </div>
-                        <label class="relay-switch" id="relay-switch-{{ $i }}">
+                        <label class="relay-switch" id="relay-switch-{{ $i }}" data-edit-only>
                             <input type="checkbox" id="relay-{{ $i }}" onchange="window.toggleRelay({{ $i }}, this.checked)">
                             <span class="relay-slider"></span>
                         </label>
@@ -244,8 +253,8 @@
                 </div>
 
                 <div class="flex justify-center gap-2 mb-3">
-                    <button class="relay-btn relay-btn-on" onclick="window.allRelay(1)">ALL ON</button>
-                    <button class="relay-btn relay-btn-off" onclick="window.allRelay(0)">ALL OFF</button>
+                    <button class="relay-btn relay-btn-on" onclick="window.allRelay(1)" data-edit-only>ALL ON</button>
+                    <button class="relay-btn relay-btn-off" onclick="window.allRelay(0)" data-edit-only>ALL OFF</button>
                 </div>
 
                 <div class="text-center">
@@ -294,6 +303,22 @@
 
         <div class="text-center mt-5 text-xs text-gray-700" id="footer">
             Auto-refresh 60 detik
+        </div>
+    </div>
+
+    {{-- PIN modal --}}
+    <div class="modal-overlay" id="pin-modal" style="display:none">
+        <div class="modal-content">
+            <h3 class="text-sm font-bold text-gray-200 mb-4">Masukkan PIN</h3>
+            <p class="text-xs text-gray-500 mb-3">Masukkan PIN 6 digit untuk mengaktifkan mode edit.</p>
+            <input type="password" id="pin-input" class="modal-input text-center tracking-[0.3em]"
+                   maxlength="6" inputmode="numeric" pattern="[0-9]*"
+                   placeholder="------" autocomplete="off">
+            <div class="text-xs text-red-400 mt-2 hidden" id="pin-error"></div>
+            <div class="flex justify-end gap-2 mt-4">
+                <button type="button" class="modal-btn modal-btn-cancel" id="pin-modal-cancel">Batal</button>
+                <button type="button" class="modal-btn modal-btn-save" id="pin-modal-submit">Masuk</button>
+            </div>
         </div>
     </div>
 
