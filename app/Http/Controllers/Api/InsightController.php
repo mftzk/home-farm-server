@@ -41,14 +41,16 @@ class InsightController extends Controller
     private function temperatureInsight(): array
     {
         $today = TemperatureReading::whereRaw('DATE(recorded_at) = CURDATE()')
+            ->where('temperature', '>=', 5)
             ->selectRaw("
                 MIN(temperature) as min_val, MAX(temperature) as max_val, ROUND(AVG(temperature), 1) as avg_val, COUNT(*) as total,
-                (SELECT TIME_FORMAT(r.recorded_at, '%H:%i') FROM temperature_readings r WHERE DATE(r.recorded_at) = CURDATE() ORDER BY r.temperature ASC, r.id ASC LIMIT 1) as min_at,
-                (SELECT TIME_FORMAT(r.recorded_at, '%H:%i') FROM temperature_readings r WHERE DATE(r.recorded_at) = CURDATE() ORDER BY r.temperature DESC, r.id ASC LIMIT 1) as max_at
+                (SELECT TIME_FORMAT(r.recorded_at, '%H:%i') FROM temperature_readings r WHERE DATE(r.recorded_at) = CURDATE() AND r.temperature >= 5 ORDER BY r.temperature ASC, r.id ASC LIMIT 1) as min_at,
+                (SELECT TIME_FORMAT(r.recorded_at, '%H:%i') FROM temperature_readings r WHERE DATE(r.recorded_at) = CURDATE() AND r.temperature >= 5 ORDER BY r.temperature DESC, r.id ASC LIMIT 1) as max_at
             ")
             ->first();
 
         $yesterday = TemperatureReading::whereRaw('DATE(recorded_at) = CURDATE() - INTERVAL 1 DAY')
+            ->where('temperature', '>=', 5)
             ->selectRaw('MIN(temperature) as min_val, MAX(temperature) as max_val, ROUND(AVG(temperature), 1) as avg_val, COUNT(*) as total')
             ->first();
 
@@ -58,14 +60,16 @@ class InsightController extends Controller
     private function humidityInsight(): array
     {
         $today = TemperatureReading::whereRaw('DATE(recorded_at) = CURDATE()')
+            ->whereBetween('humidity', [5, 100])
             ->selectRaw("
                 MIN(humidity) as min_val, MAX(humidity) as max_val, ROUND(AVG(humidity), 1) as avg_val, COUNT(*) as total,
-                (SELECT TIME_FORMAT(r.recorded_at, '%H:%i') FROM temperature_readings r WHERE DATE(r.recorded_at) = CURDATE() ORDER BY r.humidity ASC, r.id ASC LIMIT 1) as min_at,
-                (SELECT TIME_FORMAT(r.recorded_at, '%H:%i') FROM temperature_readings r WHERE DATE(r.recorded_at) = CURDATE() ORDER BY r.humidity DESC, r.id ASC LIMIT 1) as max_at
+                (SELECT TIME_FORMAT(r.recorded_at, '%H:%i') FROM temperature_readings r WHERE DATE(r.recorded_at) = CURDATE() AND r.humidity >= 5 AND r.humidity <= 100 ORDER BY r.humidity ASC, r.id ASC LIMIT 1) as min_at,
+                (SELECT TIME_FORMAT(r.recorded_at, '%H:%i') FROM temperature_readings r WHERE DATE(r.recorded_at) = CURDATE() AND r.humidity >= 5 AND r.humidity <= 100 ORDER BY r.humidity DESC, r.id ASC LIMIT 1) as max_at
             ")
             ->first();
 
         $yesterday = TemperatureReading::whereRaw('DATE(recorded_at) = CURDATE() - INTERVAL 1 DAY')
+            ->whereBetween('humidity', [5, 100])
             ->selectRaw('MIN(humidity) as min_val, MAX(humidity) as max_val, ROUND(AVG(humidity), 1) as avg_val, COUNT(*) as total')
             ->first();
 
