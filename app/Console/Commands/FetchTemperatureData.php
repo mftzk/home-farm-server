@@ -61,15 +61,15 @@ class FetchTemperatureData extends Command
         $temperature = (float) $data['t'];
         $humidity = (float) $data['h'];
 
-        if ($temperature < 2) {
-            $this->error("SENSOR GLITCH: t={$temperature} (below minimum 2°C)");
+        if ($temperature < 5) {
+            $this->error("SENSOR GLITCH: t={$temperature} (below minimum 5°C)");
             Log::error("FetchTemperatureData: temperature below minimum t={$temperature}");
 
             return self::FAILURE;
         }
 
-        if ($humidity < 2 || $humidity > 100) {
-            $this->error("SENSOR GLITCH: h={$humidity} (out of range 2-100%)");
+        if ($humidity < 5 || $humidity > 100) {
+            $this->error("SENSOR GLITCH: h={$humidity} (out of range 5-100%)");
             Log::error("FetchTemperatureData: humidity out of range h={$humidity}");
 
             return self::FAILURE;
