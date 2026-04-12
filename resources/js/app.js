@@ -240,6 +240,15 @@ function applyTempMetric(json) {
         y: parseFloat(r[humField]),
     }));
     tempChart.update('none');
+
+    const last10 = json.data.slice(-10).reverse();
+    const tbody = document.getElementById('temp-tbl');
+    tbody.innerHTML = last10
+        .map(
+            (r, i) =>
+                `<tr><td>${i + 1}</td><td class="temp-cell">${parseFloat(r[tempField]).toFixed(1)}</td><td class="hum-cell">${parseFloat(r[humField]).toFixed(1)}</td><td>${r.recorded_at}</td></tr>`
+        )
+        .join('');
 }
 
 async function fetchTempData() {
@@ -263,14 +272,6 @@ async function fetchTempData() {
             document.getElementById('h-max').textContent = json.stats.max_hum ?? '--';
         }
 
-        const last10 = json.data.slice(-10).reverse();
-        const tbody = document.getElementById('temp-tbl');
-        tbody.innerHTML = last10
-            .map(
-                (r, i) =>
-                    `<tr><td>${i + 1}</td><td class="temp-cell">${parseFloat(r.temperature).toFixed(1)}</td><td class="hum-cell">${parseFloat(r.humidity).toFixed(1)}</td><td>${r.recorded_at}</td></tr>`
-            )
-            .join('');
     } catch (e) {
         document.getElementById('temp-dot').className = 'status-dot err';
     }
