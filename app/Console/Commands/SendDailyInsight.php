@@ -77,7 +77,9 @@ class SendDailyInsight extends Command
 
     private function lightInsight(): array
     {
-        $row = LightReading::whereRaw('DATE(recorded_at) = CURDATE() - INTERVAL 1 DAY')
+        $yesterday = now()->subDay()->toDateString();
+
+        $row = LightReading::whereDate('recorded_at', $yesterday)
             ->selectRaw('MIN(lux) as min_val, MAX(lux) as max_val, ROUND(AVG(lux), 1) as avg_val, COUNT(*) as total')
             ->first();
 
@@ -86,7 +88,9 @@ class SendDailyInsight extends Command
 
     private function temperatureInsight(): array
     {
-        $row = TemperatureReading::whereRaw('DATE(recorded_at) = CURDATE() - INTERVAL 1 DAY')
+        $yesterday = now()->subDay()->toDateString();
+
+        $row = TemperatureReading::whereDate('recorded_at', $yesterday)
             ->where('temperature', '>=', 5)
             ->selectRaw('MIN(temperature) as min_val, MAX(temperature) as max_val, ROUND(AVG(temperature), 1) as avg_val, COUNT(*) as total')
             ->first();
@@ -96,7 +100,9 @@ class SendDailyInsight extends Command
 
     private function humidityInsight(): array
     {
-        $row = TemperatureReading::whereRaw('DATE(recorded_at) = CURDATE() - INTERVAL 1 DAY')
+        $yesterday = now()->subDay()->toDateString();
+
+        $row = TemperatureReading::whereDate('recorded_at', $yesterday)
             ->whereBetween('humidity', [5, 100])
             ->selectRaw('MIN(humidity) as min_val, MAX(humidity) as max_val, ROUND(AVG(humidity), 1) as avg_val, COUNT(*) as total')
             ->first();
