@@ -18,6 +18,12 @@ class ReadingController extends Controller
         '30d' => [30, 'DAY'],
     ];
 
+    // Long ranges are aggregated to avoid the row limit cutting off data
+    private const AGGREGATE_MAP = [
+        '7d'  => "DATE_FORMAT(recorded_at, '%Y-%m-%d %H:00:00')", // hourly avg → 168 pts
+        '30d' => "DATE_FORMAT(recorded_at, '%Y-%m-%d 00:00:00')", // daily avg  →  30 pts
+    ];
+
     public function index(Request $request): JsonResponse
     {
         $range = $request->input('range', '24h');
@@ -26,10 +32,20 @@ class ReadingController extends Controller
 
         $limit = min(max((int) $request->input('limit', 500), 1), 5000);
 
-        $data = LightReading::where('recorded_at', '>=', DB::raw("NOW() - INTERVAL {$interval}"))
-            ->orderBy('recorded_at')
-            ->limit($limit)
-            ->get(['lux', 'recorded_at']);
+        $groupBy = self::AGGREGATE_MAP[$range] ?? null;
+
+        if ($groupBy) {
+            $data = LightReading::where('recorded_at', '>=', DB::raw("NOW() - INTERVAL {$interval}"))
+                ->selectRaw("{$groupBy} AS recorded_at, ROUND(AVG(lux), 1) AS lux")
+                ->groupByRaw($groupBy)
+                ->orderBy('recorded_at')
+                ->get();
+        } else {
+            $data = LightReading::where('recorded_at', '>=', DB::raw("NOW() - INTERVAL {$interval}"))
+                ->orderBy('recorded_at')
+                ->limit($limit)
+                ->get(['lux', 'recorded_at']);
+        }
 
         $result = ['data' => $data];
 
