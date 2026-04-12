@@ -36,14 +36,16 @@ class TemperatureController extends Controller
 
         if ($groupBy) {
             $data = TemperatureReading::where('recorded_at', '>=', DB::raw("NOW() - INTERVAL {$interval}"))
-                ->whereBetween('humidity', [0, 100])
+                ->where('temperature', '>=', 2)
+                ->whereBetween('humidity', [2, 100])
                 ->selectRaw("{$groupBy} AS recorded_at, ROUND(AVG(temperature), 1) AS temperature, ROUND(AVG(humidity), 1) AS humidity")
                 ->groupByRaw($groupBy)
                 ->orderBy('recorded_at')
                 ->get();
         } else {
             $data = TemperatureReading::where('recorded_at', '>=', DB::raw("NOW() - INTERVAL {$interval}"))
-                ->whereBetween('humidity', [0, 100])
+                ->where('temperature', '>=', 2)
+                ->whereBetween('humidity', [2, 100])
                 ->orderBy('recorded_at')
                 ->limit($limit)
                 ->get(['temperature', 'humidity', 'recorded_at']);
@@ -53,7 +55,8 @@ class TemperatureController extends Controller
 
         if ($request->has('stats')) {
             $stats = TemperatureReading::where('recorded_at', '>=', DB::raw("NOW() - INTERVAL {$interval}"))
-                ->whereBetween('humidity', [0, 100])
+                ->where('temperature', '>=', 2)
+                ->whereBetween('humidity', [2, 100])
                 ->selectRaw('MIN(temperature) AS min_temp, MAX(temperature) AS max_temp, ROUND(AVG(temperature), 1) AS avg_temp, MIN(humidity) AS min_hum, MAX(humidity) AS max_hum, ROUND(AVG(humidity), 1) AS avg_hum, COUNT(*) AS total')
                 ->first();
 
