@@ -13,6 +13,129 @@ let tempChart;
 
 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
 
+// ===== MODE (READ / EDIT) =====
+
+const MODE_API = '/api/mode';
+let currentMode = window.__dashboardMode || 'read';
+
+function updateModeUI() {
+    const isEdit = currentMode === 'edit';
+    const icon = document.getElementById('mode-icon');
+    const label = document.getElementById('mode-label');
+    const btn = document.getElementById('mode-toggle');
+
+    if (icon) icon.innerHTML = isEdit ? '&#128275;' : '&#128274;';
+    if (label) label.textContent = isEdit ? 'Mode Edit' : 'Mode Baca';
+    if (btn) btn.classList.toggle('edit-active', isEdit);
+
+    document.querySelectorAll('[data-edit-only]').forEach(el => {
+        el.classList.toggle('disabled', !isEdit);
+        if (el.tagName === 'BUTTON') el.disabled = !isEdit;
+        if (el.tagName === 'LABEL') {
+            const input = el.querySelector('input');
+            if (input) input.disabled = !isEdit;
+        }
+    });
+}
+
+window.handleModeToggle = function () {
+    if (currentMode === 'edit') {
+        lockMode();
+    } else {
+        openPinModal();
+    }
+};
+
+function openPinModal() {
+    const modal = document.getElementById('pin-modal');
+    const input = document.getElementById('pin-input');
+    const error = document.getElementById('pin-error');
+    if (modal) modal.style.display = '';
+    if (input) { input.value = ''; input.focus(); }
+    if (error) error.classList.add('hidden');
+}
+
+function closePinModal() {
+    const modal = document.getElementById('pin-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+async function submitPin() {
+    const pin = document.getElementById('pin-input')?.value || '';
+    const errorEl = document.getElementById('pin-error');
+
+    if (!/^\d{6}$/.test(pin)) {
+        if (errorEl) {
+            errorEl.textContent = 'PIN harus 6 digit angka';
+            errorEl.classList.remove('hidden');
+        }
+        return;
+    }
+
+    try {
+        const res = await fetch(`${MODE_API}/verify`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {}),
+            },
+            body: JSON.stringify({ pin }),
+        });
+
+        if (!res.ok) {
+            const json = await res.json().catch(() => ({}));
+            throw new Error(json.error || 'PIN salah');
+        }
+
+        const json = await res.json();
+        currentMode = json.mode;
+        updateModeUI();
+        closePinModal();
+    } catch (e) {
+        if (errorEl) {
+            errorEl.textContent = e.message;
+            errorEl.classList.remove('hidden');
+        }
+    }
+}
+
+async function lockMode() {
+    try {
+        const res = await fetch(`${MODE_API}/lock`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {}),
+            },
+        });
+        const json = await res.json();
+        currentMode = json.mode;
+    } catch {
+        currentMode = 'read';
+    }
+    updateModeUI();
+}
+
+function initPinModal() {
+    const modal = document.getElementById('pin-modal');
+    const panel = modal?.querySelector('.modal-content');
+    const cancelBtn = document.getElementById('pin-modal-cancel');
+    const submitBtn = document.getElementById('pin-modal-submit');
+    const input = document.getElementById('pin-input');
+
+    panel?.addEventListener('click', (e) => e.stopPropagation());
+    modal?.addEventListener('click', (e) => {
+        if (e.target === modal) closePinModal();
+    });
+    cancelBtn?.addEventListener('click', () => closePinModal());
+    submitBtn?.addEventListener('click', () => submitPin());
+    input?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') submitPin();
+    });
+}
+
 // ===== LIGHT MONITOR =====
 
 function initChart() {
@@ -354,6 +477,7 @@ window.updateModalLabels = function () {
 };
 
 window.openAutoConfig = function (relayId) {
+    if (currentMode !== 'edit') return;
     currentModalRelayId = relayId;
     const config = autoConfigs.find((c) => c.relay_id === relayId) || {};
     document.getElementById('modal-relay-name').textContent = `Relay ${relayId + 1}`;
@@ -413,6 +537,13 @@ window.saveAutoConfig = async function () {
                 threshold_off: thresholdOff,
             }),
         });
+
+        if (res.status === 403) {
+            currentMode = 'read';
+            updateModeUI();
+            window.closeAutoModal();
+            throw new Error('Mode edit diperlukan');
+        }
 
         if (!res.ok) {
             let msg = 'Gagal menyimpan';
@@ -510,6 +641,11 @@ window.toggleRelay = async function (id, checked) {
             },
             body: JSON.stringify({ id, state: checked ? 1 : 0 }),
         });
+        if (res.status === 403) {
+            currentMode = 'read';
+            updateModeUI();
+            throw new Error('Mode edit diperlukan');
+        }
         const json = await res.json();
         if (json.error) throw new Error(json.error);
         updateRelayUI(json.s);
@@ -530,6 +666,11 @@ window.allRelay = async function (state) {
             },
             body: JSON.stringify({ state }),
         });
+        if (res.status === 403) {
+            currentMode = 'read';
+            updateModeUI();
+            throw new Error('Mode edit diperlukan');
+        }
         const json = await res.json();
         if (json.error) throw new Error(json.error);
         updateRelayUI(json.s);
@@ -626,6 +767,8 @@ document.querySelectorAll('#tab-bar button').forEach((btn) => {
 initChart();
 initTempChart();
 initAutoModal();
+initPinModal();
+updateModeUI();
 fetchData();
 fetchTempData();
 fetchRelayStatus();
