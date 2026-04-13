@@ -138,32 +138,6 @@
             <button data-range="30d" class="range-btn">30 Hari</button>
         </div>
 
-        {{-- Stat cards --}}
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mb-5">
-            <div class="card">
-                <div class="card-label">
-                    <span class="status-dot ok" id="dot"></span>Terakhir
-                </div>
-                <div class="card-value text-forest-light" id="c-cur">--</div>
-                <div class="card-unit">lux</div>
-            </div>
-            <div class="card">
-                <div class="card-label">Min</div>
-                <div class="card-value text-emerald-300" id="c-min">--</div>
-                <div class="card-unit">lux</div>
-            </div>
-            <div class="card">
-                <div class="card-label">Max</div>
-                <div class="card-value text-green-200" id="c-max">--</div>
-                <div class="card-unit">lux</div>
-            </div>
-            <div class="card">
-                <div class="card-label">Rata-rata</div>
-                <div class="card-value text-teal-300" id="c-avg">--</div>
-                <div class="card-unit">lux</div>
-            </div>
-        </div>
-
         {{-- Temperature & Humidity stat cards --}}
         <h2 class="section-title">Suhu & Kelembapan (SHT40)</h2>
         <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3.5 mb-5">
@@ -212,8 +186,32 @@
             <canvas id="temp-chart"></canvas>
         </div>
 
-        {{-- Light stat cards title --}}
+        {{-- Light stat cards --}}
         <h2 class="section-title">Cahaya (BH1750)</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mb-5">
+            <div class="card">
+                <div class="card-label">
+                    <span class="status-dot ok" id="dot"></span>Terakhir
+                </div>
+                <div class="card-value text-forest-light" id="c-cur">--</div>
+                <div class="card-unit">lux</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Min</div>
+                <div class="card-value text-emerald-300" id="c-min">--</div>
+                <div class="card-unit">lux</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Max</div>
+                <div class="card-value text-green-200" id="c-max">--</div>
+                <div class="card-unit">lux</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Rata-rata</div>
+                <div class="card-value text-teal-300" id="c-avg">--</div>
+                <div class="card-unit">lux</div>
+            </div>
+        </div>
 
         {{-- Chart (left) + Relay (right) --}}
         <div class="grid grid-cols-1 xl:grid-cols-[1fr_280px] gap-4 mb-5">
