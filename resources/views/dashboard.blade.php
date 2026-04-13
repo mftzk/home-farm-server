@@ -13,15 +13,11 @@
 <body class="bg-dark-900 text-gray-100 min-h-screen font-sans">
     <div class="max-w-[1100px] mx-auto px-4 py-6">
 
-        <h1 class="text-center text-2xl font-bold text-white mb-1">
-            IoT<span class="text-forest-light">Dashboard</span>
-        </h1>
-        <p class="text-center text-sm text-gray-600 mb-3">
-            ESP8266 &mdash; Light Monitor + Temp/Humidity + Relay Control
-        </p>
-
-        {{-- Mode toggle --}}
-        <div class="flex justify-center mb-5">
+        {{-- Topbar --}}
+        <div class="flex items-center justify-between mb-5">
+            <h1 class="text-xl font-bold tracking-tight text-gray-100">
+                IoT<span class="text-forest-light">Dashboard</span>
+            </h1>
             <button id="mode-toggle" class="mode-btn" onclick="window.handleModeToggle()">
                 <span id="mode-icon">&#128274;</span>
                 <span id="mode-label">Mode Baca</span>
@@ -36,15 +32,6 @@
 
         {{-- Tab: Dashboard --}}
         <div id="tab-dashboard">
-
-        {{-- Range buttons --}}
-        <div class="flex justify-center gap-2 mb-5 flex-wrap" id="range-bar">
-            <button data-range="1h" class="range-btn">1 Jam</button>
-            <button data-range="6h" class="range-btn">6 Jam</button>
-            <button data-range="24h" class="range-btn active">24 Jam</button>
-            <button data-range="7d" class="range-btn">7 Hari</button>
-            <button data-range="30d" class="range-btn">30 Hari</button>
-        </div>
 
         {{-- Daily Insight --}}
         <div class="insight-panel mb-5" id="insight-panel">
@@ -140,6 +127,15 @@
             <div class="insight-relay" id="insight-relay">
                 <span class="text-xs text-gray-600">Relay: memuat...</span>
             </div>
+        </div>
+
+        {{-- Range buttons --}}
+        <div class="flex justify-center gap-2 mb-5 flex-wrap" id="range-bar">
+            <button data-range="1h" class="range-btn">1 Jam</button>
+            <button data-range="6h" class="range-btn">6 Jam</button>
+            <button data-range="24h" class="range-btn active">24 Jam</button>
+            <button data-range="7d" class="range-btn">7 Hari</button>
+            <button data-range="30d" class="range-btn">30 Hari</button>
         </div>
 
         {{-- Stat cards --}}
