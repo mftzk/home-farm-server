@@ -6,6 +6,7 @@ use App\Models\LightReading;
 use App\Models\RelayAutoConfig;
 use App\Models\TemperatureReading;
 use Illuminate\Console\Command;
+use App\Services\DiscordService;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -77,6 +78,29 @@ class EvaluateAutoRelay extends Command
         return self::SUCCESS;
     }
 
+    private function sendRelayFailureAlert(int $relayId, string $action, string $sensorType, float $value, string $error): void
+    {
+        $discord = app(DiscordService::class);
+
+        if (! $discord->isConfigured()) {
+            return;
+        }
+
+        $unit = $sensorType === 'light' ? ' lux' : ' °C';
+
+        $discord->sendEmbed([
+            'title' => "⚠️ Relay {$relayId} gagal {$action}",
+            'description' => "Relay {$relayId} seharusnya **{$action}** berdasarkan sensor {$sensorType} ({$value}{$unit}) tapi gagal dieksekusi.",
+            'color' => 0xFF4444,
+            'fields' => [
+                ['name' => 'Sensor', 'value' => ucfirst($sensorType), 'inline' => true],
+                ['name' => 'Nilai', 'value' => "{$value}{$unit}", 'inline' => true],
+                ['name' => 'Error', 'value' => $error, 'inline' => false],
+            ],
+            'timestamp' => now()->toIso8601String(),
+        ]);
+    }
+
     private function switchRelay(int $relayId, int $state, RelayAutoConfig $config, string $ip, int $timeout, string $sensorType, float $value): void
     {
         $action = $state ? 'ON' : 'OFF';
@@ -88,6 +112,7 @@ class EvaluateAutoRelay extends Command
             if (! $response->successful()) {
                 $this->error("Relay {$relayId}: HTTP {$response->status()} trying to turn {$action}");
                 Log::warning("EvaluateAutoRelay: Relay {$relayId} HTTP {$response->status()}");
+                $this->sendRelayFailureAlert($relayId, $action, $sensorType, $value, "HTTP {$response->status()}");
 
                 return;
             }
@@ -98,6 +123,7 @@ class EvaluateAutoRelay extends Command
         } catch (\Exception $e) {
             $this->error("Relay {$relayId}: {$e->getMessage()}");
             Log::warning("EvaluateAutoRelay: Relay {$relayId} error: {$e->getMessage()}");
+            $this->sendRelayFailureAlert($relayId, $action, $sensorType, $value, $e->getMessage());
         }
     }
 }
