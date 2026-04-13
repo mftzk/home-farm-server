@@ -55,6 +55,18 @@
                         <span class="text-xs text-gray-600">vs kemarin: --</span>
                     </div>
                     <div class="insight-peaks">
+                        <div class="text-[10px] text-gray-500 font-semibold uppercase tracking-wider mb-0.5">24 Jam</div>
+                        <div class="insight-peak-row">
+                            <span class="text-xs text-gray-600">Peak</span>
+                            <span class="text-xs font-semibold text-green-200" id="insight-light-24h-max">--</span>
+                            <span class="text-xs text-gray-600" id="insight-light-24h-max-at"></span>
+                        </div>
+                        <div class="insight-peak-row">
+                            <span class="text-xs text-gray-600">Low</span>
+                            <span class="text-xs font-semibold text-emerald-300" id="insight-light-24h-min">--</span>
+                            <span class="text-xs text-gray-600" id="insight-light-24h-min-at"></span>
+                        </div>
+                        <div class="text-[10px] text-gray-500 font-semibold uppercase tracking-wider mt-1.5 mb-0.5">Hari ini</div>
                         <div class="insight-peak-row">
                             <span class="text-xs text-gray-600">Peak</span>
                             <span class="text-xs font-semibold text-green-200" id="insight-light-max">--</span>
@@ -82,6 +94,18 @@
                         <span class="text-xs text-gray-600">vs kemarin: --</span>
                     </div>
                     <div class="insight-peaks">
+                        <div class="text-[10px] text-gray-500 font-semibold uppercase tracking-wider mb-0.5">24 Jam</div>
+                        <div class="insight-peak-row">
+                            <span class="text-xs text-gray-600">Peak</span>
+                            <span class="text-xs font-semibold text-orange-200" id="insight-temp-24h-max">--</span>
+                            <span class="text-xs text-gray-600" id="insight-temp-24h-max-at"></span>
+                        </div>
+                        <div class="insight-peak-row">
+                            <span class="text-xs text-gray-600">Low</span>
+                            <span class="text-xs font-semibold text-orange-300" id="insight-temp-24h-min">--</span>
+                            <span class="text-xs text-gray-600" id="insight-temp-24h-min-at"></span>
+                        </div>
+                        <div class="text-[10px] text-gray-500 font-semibold uppercase tracking-wider mt-1.5 mb-0.5">Hari ini</div>
                         <div class="insight-peak-row">
                             <span class="text-xs text-gray-600">Peak</span>
                             <span class="text-xs font-semibold text-orange-200" id="insight-temp-max">--</span>
@@ -109,6 +133,18 @@
                         <span class="text-xs text-gray-600">vs kemarin: --</span>
                     </div>
                     <div class="insight-peaks">
+                        <div class="text-[10px] text-gray-500 font-semibold uppercase tracking-wider mb-0.5">24 Jam</div>
+                        <div class="insight-peak-row">
+                            <span class="text-xs text-gray-600">Peak</span>
+                            <span class="text-xs font-semibold text-sky-200" id="insight-hum-24h-max">--</span>
+                            <span class="text-xs text-gray-600" id="insight-hum-24h-max-at"></span>
+                        </div>
+                        <div class="insight-peak-row">
+                            <span class="text-xs text-gray-600">Low</span>
+                            <span class="text-xs font-semibold text-sky-300" id="insight-hum-24h-min">--</span>
+                            <span class="text-xs text-gray-600" id="insight-hum-24h-min-at"></span>
+                        </div>
+                        <div class="text-[10px] text-gray-500 font-semibold uppercase tracking-wider mt-1.5 mb-0.5">Hari ini</div>
                         <div class="insight-peak-row">
                             <span class="text-xs text-gray-600">Peak</span>
                             <span class="text-xs font-semibold text-sky-200" id="insight-hum-max">--</span>

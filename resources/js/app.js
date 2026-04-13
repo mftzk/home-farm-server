@@ -710,6 +710,15 @@ function updateInsightSection(prefix, data, unit) {
     document.getElementById(`insight-${prefix}-min`).textContent =
         data.today.min !== null ? `${formatVal(data.today.min)} ${unit}` : '--';
     document.getElementById(`insight-${prefix}-min-at`).textContent = timeLabel(data.today.min_at);
+
+    if (data.last24h) {
+        document.getElementById(`insight-${prefix}-24h-max`).textContent =
+            data.last24h.max !== null ? `${formatVal(data.last24h.max)} ${unit}` : '--';
+        document.getElementById(`insight-${prefix}-24h-max-at`).textContent = timeLabel(data.last24h.max_at);
+        document.getElementById(`insight-${prefix}-24h-min`).textContent =
+            data.last24h.min !== null ? `${formatVal(data.last24h.min)} ${unit}` : '--';
+        document.getElementById(`insight-${prefix}-24h-min-at`).textContent = timeLabel(data.last24h.min_at);
+    }
 }
 
 function updateRelayInsight(relay) {

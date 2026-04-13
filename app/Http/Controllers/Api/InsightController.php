@@ -31,11 +31,19 @@ class InsightController extends Controller
             ")
             ->first();
 
+        $last24h = LightReading::whereRaw('recorded_at >= NOW() - INTERVAL 24 HOUR')
+            ->selectRaw("
+                MIN(lux) as min_val, MAX(lux) as max_val, ROUND(AVG(lux), 1) as avg_val,
+                (SELECT TIME_FORMAT(r.recorded_at, '%H:%i') FROM light_readings r WHERE r.recorded_at >= NOW() - INTERVAL 24 HOUR ORDER BY r.lux ASC, r.id ASC LIMIT 1) as min_at,
+                (SELECT TIME_FORMAT(r.recorded_at, '%H:%i') FROM light_readings r WHERE r.recorded_at >= NOW() - INTERVAL 24 HOUR ORDER BY r.lux DESC, r.id ASC LIMIT 1) as max_at
+            ")
+            ->first();
+
         $yesterday = LightReading::whereRaw('DATE(recorded_at) = CURDATE() - INTERVAL 1 DAY')
             ->selectRaw('MIN(lux) as min_val, MAX(lux) as max_val, ROUND(AVG(lux), 1) as avg_val, COUNT(*) as total')
             ->first();
 
-        return $this->buildInsight($today, $yesterday);
+        return $this->buildInsight($today, $yesterday, $last24h);
     }
 
     private function temperatureInsight(): array
@@ -49,12 +57,21 @@ class InsightController extends Controller
             ")
             ->first();
 
+        $last24h = TemperatureReading::whereRaw('recorded_at >= NOW() - INTERVAL 24 HOUR')
+            ->where('temperature', '>=', 5)
+            ->selectRaw("
+                MIN(temperature) as min_val, MAX(temperature) as max_val, ROUND(AVG(temperature), 1) as avg_val,
+                (SELECT TIME_FORMAT(r.recorded_at, '%H:%i') FROM temperature_readings r WHERE r.recorded_at >= NOW() - INTERVAL 24 HOUR AND r.temperature >= 5 ORDER BY r.temperature ASC, r.id ASC LIMIT 1) as min_at,
+                (SELECT TIME_FORMAT(r.recorded_at, '%H:%i') FROM temperature_readings r WHERE r.recorded_at >= NOW() - INTERVAL 24 HOUR AND r.temperature >= 5 ORDER BY r.temperature DESC, r.id ASC LIMIT 1) as max_at
+            ")
+            ->first();
+
         $yesterday = TemperatureReading::whereRaw('DATE(recorded_at) = CURDATE() - INTERVAL 1 DAY')
             ->where('temperature', '>=', 5)
             ->selectRaw('MIN(temperature) as min_val, MAX(temperature) as max_val, ROUND(AVG(temperature), 1) as avg_val, COUNT(*) as total')
             ->first();
 
-        return $this->buildInsight($today, $yesterday);
+        return $this->buildInsight($today, $yesterday, $last24h);
     }
 
     private function humidityInsight(): array
@@ -68,15 +85,24 @@ class InsightController extends Controller
             ")
             ->first();
 
+        $last24h = TemperatureReading::whereRaw('recorded_at >= NOW() - INTERVAL 24 HOUR')
+            ->whereBetween('humidity', [5, 100])
+            ->selectRaw("
+                MIN(humidity) as min_val, MAX(humidity) as max_val, ROUND(AVG(humidity), 1) as avg_val,
+                (SELECT TIME_FORMAT(r.recorded_at, '%H:%i') FROM temperature_readings r WHERE r.recorded_at >= NOW() - INTERVAL 24 HOUR AND r.humidity >= 5 AND r.humidity <= 100 ORDER BY r.humidity ASC, r.id ASC LIMIT 1) as min_at,
+                (SELECT TIME_FORMAT(r.recorded_at, '%H:%i') FROM temperature_readings r WHERE r.recorded_at >= NOW() - INTERVAL 24 HOUR AND r.humidity >= 5 AND r.humidity <= 100 ORDER BY r.humidity DESC, r.id ASC LIMIT 1) as max_at
+            ")
+            ->first();
+
         $yesterday = TemperatureReading::whereRaw('DATE(recorded_at) = CURDATE() - INTERVAL 1 DAY')
             ->whereBetween('humidity', [5, 100])
             ->selectRaw('MIN(humidity) as min_val, MAX(humidity) as max_val, ROUND(AVG(humidity), 1) as avg_val, COUNT(*) as total')
             ->first();
 
-        return $this->buildInsight($today, $yesterday);
+        return $this->buildInsight($today, $yesterday, $last24h);
     }
 
-    private function buildInsight($today, $yesterday): array
+    private function buildInsight($today, $yesterday, $last24h = null): array
     {
         $todayAvg = $today->avg_val ? (float) $today->avg_val : null;
         $yesterdayAvg = $yesterday->avg_val ? (float) $yesterday->avg_val : null;
@@ -90,7 +116,7 @@ class InsightController extends Controller
             ];
         }
 
-        return [
+        $result = [
             'today' => [
                 'min' => $today->min_val !== null ? (float) $today->min_val : null,
                 'max' => $today->max_val !== null ? (float) $today->max_val : null,
@@ -107,6 +133,18 @@ class InsightController extends Controller
             ],
             'trend' => $trend,
         ];
+
+        if ($last24h) {
+            $result['last24h'] = [
+                'min' => $last24h->min_val !== null ? (float) $last24h->min_val : null,
+                'max' => $last24h->max_val !== null ? (float) $last24h->max_val : null,
+                'avg' => $last24h->avg_val !== null ? (float) $last24h->avg_val : null,
+                'min_at' => $last24h->min_at,
+                'max_at' => $last24h->max_at,
+            ];
+        }
+
+        return $result;
     }
 
     private function relayInsight(): array
